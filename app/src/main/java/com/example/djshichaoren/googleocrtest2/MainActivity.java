@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -21,17 +20,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.services.ShowTranslationService;
 import com.example.djshichaoren.googleocrtest2.test.GoogleOcrTester;
 import com.example.djshichaoren.googleocrtest2.util.GoogleOcr;
-import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeCallback;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.util.ScreenShotter;
 import com.example.djshichaoren.googleocrtest2.util.image.BitmapSaver;
-
-import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mImageView;
     private ScreenShotter mScreenShotter;
     private static final String TAG = "lwd";
-    private static final int REQUEST_MEDIA_PROJECTION = 1;
     private static final int REQUEST_DRAW_OVERLAY = 0;
+    private static final int REQUEST_MEDIA_PROJECTION_PERMISSION = 3;
 
     private MediaProjectionManager mMediaProjectionManager;
     private GoogleOcrTester mGoogleOcrTester;
@@ -53,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn_show_screen_shot_button;
     Button btn_show_screen_shot_image;
     Button btn_start_recognize_screen_service;
+
+    private RequestPermissionResult mRequestMediaProjectionResult;
 
 
     @Override
@@ -71,10 +68,8 @@ public class MainActivity extends AppCompatActivity {
         mGoogleOcr = new GoogleOcr(mContext);
         //获取MediaProjectionManager实例
         mMediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        mScreenShotter = new ScreenShotter(getWindowManager());
 
-//        getStatusBarHeight();
-//        getNavigationBarHeight();
+        mScreenShotter = new ScreenShotter(getWindowManager());
 
         // 屏幕旋转监听
         OrientationChangeCallback oritationChangeCallback = new OrientationChangeCallback(getApplicationContext(), mScreenShotter);
@@ -82,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
         mGoogleOcrTester = new GoogleOcrTester(mGoogleOcr, mContext);
+        requestOverlayPermission();
 
         // 测试识别组件
         btn_show_translation.setOnClickListener(new View.OnClickListener() {
@@ -96,9 +92,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // 获取监听屏幕权限
-                startActivityForResult(
-                        mMediaProjectionManager.createScreenCaptureIntent(),
-                        REQUEST_MEDIA_PROJECTION);
+                requestMediaProjectPermission(new RequestPermissionResult() {
+                    @Override
+                    public void successCallback(int resultCode, Intent data) {
+                        startRecognizeService(resultCode, data);
+                    }
+                });
+
                 // 创建截屏按钮
                 mShowTranslationService.createScreenShotButton();
             }
@@ -121,12 +121,50 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // 获取截屏权限
-                startActivityForResult(
-                        mMediaProjectionManager.createScreenCaptureIntent(), 3);
+                requestMediaProjectPermission(new RequestPermissionResult() {
+                    @Override
+                    public void successCallback(int resultCode, Intent data) {
+                        if(!canDrawOverlay()){
+                            requestOverlayPermission();
+                        }
+                        else{
+                            startRecognizeService(resultCode, data);
+                        }
+                    }
+                });
             }
         });
 
     }
+
+
+    // 请求屏幕截图权限
+    private void requestMediaProjectPermission(RequestPermissionResult requestMediaProjectionResult){
+        mRequestMediaProjectionResult = requestMediaProjectionResult;
+
+        startActivityForResult(
+                mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION_PERMISSION);
+    }
+
+    // 请求显示在屏幕权限
+    private void requestOverlayPermission(){
+        if(!canDrawOverlay()){
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_DRAW_OVERLAY);
+        }
+    }
+
+    // 开启截屏服务
+    private void startRecognizeService(int resultCode, Intent data){
+        MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+        mScreenShotter.bindSystemScreenShot(mediaProjection);
+        mShowTranslationService.startRecognizeScreen();
+
+    }
+
+    private boolean canDrawOverlay(){
+        return Settings.canDrawOverlays(this);
+    }
+
 
     private void getStatusBarHeight(){
         int result = 0;
@@ -135,10 +173,6 @@ public class MainActivity extends AppCompatActivity {
             result = getResources().getDimensionPixelSize(resourceId);
         }
         Log.i(TAG, "status bar height:" + result);
-    }
-
-    private void getNavigationBarHeight(){
-
     }
 
     @Override
@@ -198,47 +232,28 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_DRAW_OVERLAY) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+            if (!canDrawOverlay()) {
+                Toast.makeText(mContext, "当前无悬浮窗权限，软件无法运行", Toast.LENGTH_SHORT);
             }
+            else{
+                Toast.makeText(mContext, "已获取悬浮窗权限，点击开始学习", Toast.LENGTH_SHORT);
+            }
+            return;
         }
-        if (requestCode == REQUEST_MEDIA_PROJECTION) {
+
+        if (requestCode == REQUEST_MEDIA_PROJECTION_PERMISSION) {
             if (resultCode != Activity.RESULT_OK) {
-                Log.i(TAG, "User cancelled");
                 Toast.makeText(this, R.string.user_canceled_screen_shot, Toast.LENGTH_SHORT).show();
                 return;
             }
-            Log.i(TAG, "Starting screen capture");
-            MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-            mScreenShotter.bindSystemScreenShot(mediaProjection);
-        }
-        if (requestCode == 2) {
-            if (resultCode != Activity.RESULT_OK) {
-                Log.i(TAG, "User cancelled");
-                Toast.makeText(this, R.string.user_screen_overlay, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-            mScreenShotter.bindSystemScreenShot(mediaProjection);
-            mShowTranslationService.startRecognizeScreen();
-        }
-        if (requestCode == 3) {
-            if (resultCode != Activity.RESULT_OK) {
-                Log.i(TAG, "没有截屏权限");
-                Toast.makeText(this, R.string.user_canceled_screen_shot, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(this, "当前无权限，请授权", Toast.LENGTH_SHORT);
-                startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), 2);
-            } else {
-                MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-                mScreenShotter.bindSystemScreenShot(mediaProjection);
-                mShowTranslationService.startRecognizeScreen();
+            if(mRequestMediaProjectionResult != null){
+                mRequestMediaProjectionResult.successCallback(resultCode, data);
             }
         }
+    }
+
+    interface RequestPermissionResult{
+        void successCallback(int resultCode, Intent data);
     }
 
 
