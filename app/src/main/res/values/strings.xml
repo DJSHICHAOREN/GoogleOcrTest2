@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GoogleOcrTest2</string>
+    <string name="user_canceled_screen_shot">没有获得截屏权限，软件无法运行</string>
+    <string name="user_screen_overlay">没有获得在桌面弹出控件权限，软件无法运行</string>
+    <string name="notification_title">开启屏幕翻译服务——标题</string>
+    <string name="notification_content">开启屏幕翻译服务——内容</string>
+    <string name="notification_ticker">开启屏幕翻译服务——ticker</string>
+    <string name="permission_title">权限请求</string>
+</resources>
