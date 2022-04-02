@@ -13,22 +13,20 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.djshichaoren.googleocrtest2.services.ShowTranslationService;
-import com.example.djshichaoren.googleocrtest2.test.GoogleOcrTester;
+import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeCallback;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
-import com.example.djshichaoren.googleocrtest2.util.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 
 public class RealMainActivity extends AppCompatActivity {
 
     private MediaProjectionManager mMediaProjectionManager;
     private ScreenShotter mScreenShotter;
-    private ShowTranslationService mShowTranslationService;
+    private WorkService mWorkService;
     private boolean mBound = false;
     private static final String TAG = "lwd";
     private static final int GET_SCREENSHOT_REQUEST_CODE = 0;
@@ -43,7 +41,7 @@ public class RealMainActivity extends AppCompatActivity {
 
         //获取MediaProjectionManager实例
         mMediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        mScreenShotter = new ScreenShotter(getWindowManager());
+        mScreenShotter = ScreenShotter.newInstance();
 
         // 屏幕旋转监听
         OrientationChangeCallback oritationChangeCallback = new OrientationChangeCallback(getApplicationContext(), mScreenShotter);
@@ -95,8 +93,8 @@ public class RealMainActivity extends AppCompatActivity {
 
     private void recognizeScreen(int resultCode, Intent data){
         MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-        mScreenShotter.bindSystemScreenShot(mediaProjection);
-        mShowTranslationService.startRecognizeScreen();
+        mScreenShotter.setMediaProjection(mediaProjection);
+        mWorkService.startAll();
 
         btn_start.setText("停止识别");
     }
@@ -105,7 +103,7 @@ public class RealMainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // 载入layout时绑定服务
-        Intent intent = new Intent(this, ShowTranslationService.class);
+        Intent intent = new Intent(this, WorkService.class);
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -121,8 +119,8 @@ public class RealMainActivity extends AppCompatActivity {
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            ShowTranslationService.ShowTranslationBinder binder = (ShowTranslationService.ShowTranslationBinder)iBinder;
-            mShowTranslationService = binder.getService(mScreenShotter);
+            WorkService.ShowTranslationBinder binder = (WorkService.ShowTranslationBinder)iBinder;
+            mWorkService = binder.getService();
             mBound = true;
         }
 

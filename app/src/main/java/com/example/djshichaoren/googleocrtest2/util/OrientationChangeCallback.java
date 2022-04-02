@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.OrientationEventListener;
 
+import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+
 /**
  * 类描述：
  * 修改人：DJSHICHAOREN
@@ -34,7 +36,7 @@ public class OrientationChangeCallback extends OrientationEventListener {
             if(mIsHorizontalOrientation != isHorizontalOrientation){
                 Log.d("lwd", "change orientation is horizontal：" + isHorizontalOrientation);
 //                mScreenShotter.unbindScreenShot();
-//                mScreenShotter.bindSystemScreenShot(null);
+//                mScreenShotter.setMediaProjection(null);
 
                 mIsHorizontalOrientation = isHorizontalOrientation;
                 // 设置获取屏幕区域对象

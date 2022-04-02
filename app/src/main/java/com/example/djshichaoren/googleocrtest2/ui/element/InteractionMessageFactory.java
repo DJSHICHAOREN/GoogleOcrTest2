@@ -5,10 +5,9 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.models.ElementPool;
-import com.example.djshichaoren.googleocrtest2.services.ShowTranslationService;
+import com.example.djshichaoren.googleocrtest2.services.WorkService;
 
 /**
  * 类描述：生产显示识别结果的控件
@@ -45,7 +44,7 @@ public class InteractionMessageFactory {
     }
 
     public View getInteractionMessage(String englishSentence,
-                                      final ShowTranslationService.TranslationResultDisplayer translationResultDisplayer){
+                                      final WorkService.TranslationResultDisplayer translationResultDisplayer){
         // 翻译句子
         // translationResultDisplayer.translateSentence(englishSentence);
 

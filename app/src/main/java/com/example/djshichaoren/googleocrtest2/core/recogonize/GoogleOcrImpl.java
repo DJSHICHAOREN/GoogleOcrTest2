@@ -1,4 +1,4 @@
-package com.example.djshichaoren.googleocrtest2.util;
+package com.example.djshichaoren.googleocrtest2.core.recogonize;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -20,12 +20,14 @@ import java.util.ArrayList;
  * 修改时间：2019/7/16 19:49
  * 修改备注：
  */
-public class GoogleOcr {
+public class GoogleOcrImpl {
     Context mContext;
     TextRecognizer mTextRecognizer;
 
+    private static GoogleOcrImpl mGoogleOcrImpl;
 
-    public GoogleOcr(Context context){
+
+    public GoogleOcrImpl(Context context){
         mContext = context;
         mTextRecognizer = new TextRecognizer.Builder(mContext).build();
     }
@@ -33,26 +35,27 @@ public class GoogleOcr {
     public ArrayList<RecognitionResult> recognize(Bitmap image){
         if (!mTextRecognizer.isOperational()) {
             Log.w("lwd", "Detector dependencies are not yet available.");
-            Toast.makeText(mContext, "recognizer are not start", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "没有打开识别模块", Toast.LENGTH_SHORT).show();
             return null;
         }
 
         Frame outFrame = new Frame.Builder().setBitmap(image).build();
-        SparseArray<TextBlock> sparseArray = mTextRecognizer.detect(outFrame);
+        SparseArray<TextBlock> textBlockArray = mTextRecognizer.detect(outFrame);
         ArrayList<RecognitionResult> recognitionResultList = new ArrayList<>();
-        for (int i = 0; i < sparseArray.size(); ++i) {
-            TextBlock item = sparseArray.valueAt(i);
-            // Log.w("lwd", item.getValue());
-            Rect rect = item.getBoundingBox();
-            recognitionResultList.add(new RecognitionResult(rect.top, rect.left, rect.width(), rect.height(), item.getValue()));
+        for (int i = 0; i < textBlockArray.size(); ++i) {
+            TextBlock textBlock = textBlockArray.valueAt(i);
 
-//            for(Text text : item.getComponents()) {
-//                Rect rect = text.getBoundingBox();
-//                mRecognizeResultList.add(new RecognitionResult(rect.top, rect.left, rect.width(), rect.height(), text.getValue()));
-//            }
-
+            Rect rect = textBlock.getBoundingBox();
+            recognitionResultList.add(new RecognitionResult(rect.top, rect.left, rect.width(), rect.height(), textBlock.getValue()));
         }
         return recognitionResultList;
+    }
+
+    public static GoogleOcrImpl newInstance(Context context){
+        if(mGoogleOcrImpl == null){
+            mGoogleOcrImpl = new GoogleOcrImpl(context);
+        }
+        return mGoogleOcrImpl;
     }
 
 

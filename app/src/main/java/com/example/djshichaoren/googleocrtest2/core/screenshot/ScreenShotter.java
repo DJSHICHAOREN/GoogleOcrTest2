@@ -1,4 +1,4 @@
-package com.example.djshichaoren.googleocrtest2.util;
+package com.example.djshichaoren.googleocrtest2.core.screenshot;
 
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -18,8 +18,6 @@ import com.example.djshichaoren.googleocrtest2.util.image.ImageRenderTool;
 
 import java.nio.ByteBuffer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 /**
  * 类描述：
  * 修改人：DJSHICHAOREN
@@ -27,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
  * 修改备注：
  */
 public class ScreenShotter {
-    private AppCompatActivity mActivity;
     static Handler handler = new Handler();
     private int mScreenWidth;
     private int mScreenHeight;
@@ -39,10 +36,14 @@ public class ScreenShotter {
     private Bitmap mScreenShotImage;
     private BitmapBinaryzationTool mBitmapBinaryzationTool;
     private ImageRenderTool mImageRenderTool;
+    private static ScreenShotter mScreenShotter;
 
-    public ScreenShotter(final WindowManager windowManager) {
+    public ScreenShotter() {
         mBitmapBinaryzationTool = new BitmapBinaryzationTool();
         mImageRenderTool = new ImageRenderTool();
+    }
+
+    public void setWindowManager(final WindowManager windowManager){
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -60,9 +61,9 @@ public class ScreenShotter {
         }, 1000);
     }
 
-    public void bindSystemScreenShot(MediaProjection mediaProjection) {
+    public void setMediaProjection(MediaProjection mediaProjection) {
         if(mediaProjection != null) {
-            Log.i(TAG, "bindSystemScreenShot");
+            Log.i(TAG, "setMediaProjection");
 
             mMediaProjection = mediaProjection;
 
@@ -73,8 +74,19 @@ public class ScreenShotter {
         }
     }
 
+    public boolean isSupportScreenShot(){
+        if(mImageReader != null && mMediaProjection != null){
+            return true;
+        }
+        return false;
+    }
+
 
     public Bitmap takeScreenshot() {
+        if(mImageReader == null || mMediaProjection == null){
+            return null;
+        }
+
         Image image = mImageReader.acquireLatestImage();
         if(image == null){
             return null;
@@ -104,18 +116,10 @@ public class ScreenShotter {
 
 //        bitmap = Bitmap.createBitmap(bitmap, 0, yStart,
 //                bitmap.getWidth(), yHeight);
-
-
-
 //        bitmap = ImageRenderTool.whiteRestPartOfImage(bitmap, yStart, yStart + yHeight);
-
-
-
 //        bitmap = Bitmap.createBitmap(bitmap, 0, 1354,
 //                bitmap.getWidth(), 28);
-//
 //        bitmap = mBitmapBinaryzationTool.binaryzation(bitmap, 1354, 1354+28);
-
 //        bitmap = mImageRenderTool.whiteRestPartOfImage(bitmap, 1354, 1354+28);
 
 
@@ -127,6 +131,14 @@ public class ScreenShotter {
 
     public Bitmap getScreenShotImage(){
         return mScreenShotImage;
+    }
+
+    public static ScreenShotter newInstance(){
+        if(mScreenShotter == null){
+            mScreenShotter = new ScreenShotter();
+        }
+
+        return mScreenShotter;
     }
 
     public void unbindScreenShot(){

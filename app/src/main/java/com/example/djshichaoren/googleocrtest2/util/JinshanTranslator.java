@@ -4,13 +4,8 @@ import android.util.Log;
 
 import com.example.djshichaoren.googleocrtest2.http.HttpService;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
-import com.example.djshichaoren.googleocrtest2.services.ShowTranslationService;
+import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -46,7 +41,7 @@ public class JinshanTranslator {
     }
 
     public void translate(String word,
-                          final ShowTranslationService.TranslationResultDisplayer translationResultDisplayer,
+                          final WorkService.TranslationResultDisplayer translationResultDisplayer,
                           final StringType stringType){
         Call<JinshanTranslation> call = mHttpService.jinshanTranslate(word, "9D24A73F992E4B2A00E86A1780814E90", "json");
         call.enqueue(new Callback<JinshanTranslation>() {

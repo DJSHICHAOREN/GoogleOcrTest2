@@ -36,7 +36,7 @@
         </activity>
 
         <service
-            android:name=".services.ShowTranslationService"
+            android:name=".services.WorkService"
             android:enabled="true"></service>
 
 

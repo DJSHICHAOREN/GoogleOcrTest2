@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
-import com.example.djshichaoren.googleocrtest2.util.GoogleOcr;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ import java.util.List;
  * 修改备注：
  */
 public class GoogleOcrTester {
-    GoogleOcr mGoogleOcr;
+    GoogleOcrImpl mGoogleOcrImpl;
     Context mContext;
     private RecognitionResultFilter mRecognitionResultFilter;
     List<Integer> bitmapKeyList = new ArrayList<>();
-    public GoogleOcrTester(GoogleOcr googleOcr, Context context){
-        mGoogleOcr = googleOcr;
+    public GoogleOcrTester(Context context){
+        mGoogleOcrImpl = GoogleOcrImpl.newInstance(context);
         mContext = context;
         mRecognitionResultFilter = new RecognitionResultFilter();
 
@@ -43,7 +43,7 @@ public class GoogleOcrTester {
         for(int bitmapKey : bitmapKeyList){
             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), bitmapKey);
 
-            ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcr.recognize(bitmap);
+            ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(bitmap);
             RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
 
             if(recognitionResult == null){

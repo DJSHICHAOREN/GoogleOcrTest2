@@ -20,11 +20,11 @@ import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.ui.element.InteractionMessageFactory;
 import com.example.djshichaoren.googleocrtest2.ui.element.TranslationResultFactory;
-import com.example.djshichaoren.googleocrtest2.util.GoogleOcr;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
-import com.example.djshichaoren.googleocrtest2.util.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 
 import java.util.ArrayList;
@@ -36,13 +36,13 @@ import java.util.ArrayList;
  * 修改时间：2019/7/13 21:51
  * 修改备注：
  */
-public class ShowTranslationService extends Service {
+public class WorkService extends Service {
     public static boolean isStarted = false;
     private WindowManager windowManager;
     private WindowManager.LayoutParams mLayoutParams;
     private ShowTranslationBinder mBinder = new ShowTranslationBinder();
     private ScreenShotter mScreenShotter;
-    private GoogleOcr mGoogleOcr;
+    private GoogleOcrImpl mGoogleOcrImpl;
     private InteractionMessageFactory mInteractionMessageFactory;
     private View mInteractionMessageView;
     private RecognitionResultFilter mRecognitionResultFilter;
@@ -67,7 +67,7 @@ public class ShowTranslationService extends Service {
 //        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 //        mScreenShotter = new ScreenShotter(windowManager);
         Log.w("lwd", "Create translation service");
-        mGoogleOcr = new GoogleOcr(getApplicationContext());
+        mGoogleOcrImpl = GoogleOcrImpl.newInstance(getApplicationContext());
         mInteractionMessageFactory = new InteractionMessageFactory(getApplicationContext());
         mRecognitionResultFilter = new RecognitionResultFilter();
 
@@ -254,22 +254,28 @@ public class ShowTranslationService extends Service {
     /**
      * 开始进行识别，显示Service
      */
-    public void startRecognizeScreen(){
+    public void startAll(){
         final int TIME = 300;
+
+        if(mScreenShotter == null){
+            mScreenShotter = ScreenShotter.newInstance();
+        }
+
         final Handler mRecognizeHandler = new Handler();
         mRecognizeHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("lwd", "recognize screen once");
+                if(mScreenShotter == null) return;
 
+                Log.d("lwd", "recognize screen once");
                 Bitmap screenImage = mScreenShotter.takeScreenshot();
 
                 if(screenImage != null){
-//                    showScreenShot(screenImage);
-                    ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcr.recognize(screenImage);
+                    ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(screenImage);
                     RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
                     showInteractionMessage(recognitionResult);
                 }
+
                 mRecognizeHandler.postDelayed(this, TIME);
             }
         }, TIME);
@@ -281,9 +287,8 @@ public class ShowTranslationService extends Service {
     }
 
     public class ShowTranslationBinder extends Binder{
-        public ShowTranslationService getService(ScreenShotter screenShotter){
-            mScreenShotter = screenShotter;
-            return ShowTranslationService.this;
+        public WorkService getService(){
+            return WorkService.this;
         }
     }
 

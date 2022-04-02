@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -20,29 +19,26 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.djshichaoren.googleocrtest2.services.ShowTranslationService;
+import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.test.GoogleOcrTester;
-import com.example.djshichaoren.googleocrtest2.util.GoogleOcr;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeCallback;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
-import com.example.djshichaoren.googleocrtest2.util.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 import com.example.djshichaoren.googleocrtest2.util.image.BitmapSaver;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private Context mContext;
-    private GoogleOcr mGoogleOcr;
-    private ShowTranslationService mShowTranslationService;
+    private WorkService mWorkService;
     private boolean mBound = false;
-    private ImageView mImageView;
+    private ImageView iv_image;
     private ScreenShotter mScreenShotter;
     private static final String TAG = "lwd";
     private static final int REQUEST_DRAW_OVERLAY = 0;
     private static final int REQUEST_MEDIA_PROJECTION_PERMISSION = 3;
 
     private MediaProjectionManager mMediaProjectionManager;
-    private GoogleOcrTester mGoogleOcrTester;
 
     Button btn_show_translation;
     Button btn_show_screen_shot_button;
@@ -56,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mImageView = findViewById(R.id.iv_image);
+        iv_image = findViewById(R.id.iv_image);
         btn_show_translation = findViewById(R.id.btn_show_translation);
         btn_show_screen_shot_button = findViewById(R.id.btn_show_screen_shot_button);
         btn_show_screen_shot_image = findViewById(R.id.btn_show_screen_shot_image);
@@ -65,25 +61,28 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mContext = getApplicationContext();
-        mGoogleOcr = new GoogleOcr(mContext);
         //获取MediaProjectionManager实例
         mMediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
 
-        mScreenShotter = new ScreenShotter(getWindowManager());
+        mScreenShotter = ScreenShotter.newInstance();
+        mScreenShotter.setWindowManager(getWindowManager());
 
         // 屏幕旋转监听
         OrientationChangeCallback oritationChangeCallback = new OrientationChangeCallback(getApplicationContext(), mScreenShotter);
         oritationChangeCallback.enable();
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
-        mGoogleOcrTester = new GoogleOcrTester(mGoogleOcr, mContext);
+        // 请求权限
+        requestMediaProjectPermission();
         requestOverlayPermission();
 
         // 测试识别组件
         btn_show_translation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mGoogleOcrTester.testRec();
+                GoogleOcrTester googleOcrTester = new GoogleOcrTester(mContext);
+
+                googleOcrTester.testRec();
             }
         });
 
@@ -91,28 +90,22 @@ public class MainActivity extends AppCompatActivity {
         btn_show_screen_shot_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 获取监听屏幕权限
-                requestMediaProjectPermission(new RequestPermissionResult() {
-                    @Override
-                    public void successCallback(int resultCode, Intent data) {
-                        startRecognizeService(resultCode, data);
-                    }
-                });
-
                 // 创建截屏按钮
-                mShowTranslationService.createScreenShotButton();
+                requestOverlayPermission();
+                mWorkService.createScreenShotButton();
             }
         });
 
-        //
+        // 显示截图
         btn_show_screen_shot_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bitmap screenShotImage = mScreenShotter.getScreenShotImage();
-                mImageView.setImageBitmap(screenShotImage);
-
-                String bitmapPath = BitmapSaver.save(mContext, screenShotImage);
-                Log.d("lwd", "bitmapPath:" + bitmapPath);
+                if(screenShotImage != null){
+                    iv_image.setImageBitmap(screenShotImage);
+                    String bitmapPath = BitmapSaver.save(mContext, screenShotImage);
+                    Log.d("lwd", "bitmapPath:" + bitmapPath);
+                }
 
             }
         });
@@ -121,17 +114,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // 获取截屏权限
-                requestMediaProjectPermission(new RequestPermissionResult() {
-                    @Override
-                    public void successCallback(int resultCode, Intent data) {
-                        if(!canDrawOverlay()){
-                            requestOverlayPermission();
-                        }
-                        else{
-                            startRecognizeService(resultCode, data);
-                        }
-                    }
-                });
+                requestMediaProjectPermission();
+                requestOverlayPermission();
+
+                startRecognizeService();
             }
         });
 
@@ -139,11 +125,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     // 请求屏幕截图权限
-    private void requestMediaProjectPermission(RequestPermissionResult requestMediaProjectionResult){
-        mRequestMediaProjectionResult = requestMediaProjectionResult;
+    private void requestMediaProjectPermission(){
 
-        startActivityForResult(
-                mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION_PERMISSION);
+        if(!mScreenShotter.isSupportScreenShot()){
+            startActivityForResult(
+                    mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION_PERMISSION);
+
+            mRequestMediaProjectionResult = new RequestPermissionResult() {
+                @Override
+                public void successCallback(int resultCode, Intent data) {
+                    MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+                    mScreenShotter.setMediaProjection(mediaProjection);
+                }
+            };
+        }
+
     }
 
     // 请求显示在屏幕权限
@@ -154,13 +150,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 开启截屏服务
-    private void startRecognizeService(int resultCode, Intent data){
-        MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-        mScreenShotter.bindSystemScreenShot(mediaProjection);
-        mShowTranslationService.startRecognizeScreen();
-
+    private void startRecognizeService(){
+        mWorkService.startAll();
     }
 
+    // 是否有显示在屏幕权限
     private boolean canDrawOverlay(){
         return Settings.canDrawOverlays(this);
     }
@@ -178,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, ShowTranslationService.class);
+        Intent intent = new Intent(this, WorkService.class);
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -194,8 +188,8 @@ public class MainActivity extends AppCompatActivity {
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            ShowTranslationService.ShowTranslationBinder binder = (ShowTranslationService.ShowTranslationBinder)iBinder;
-            mShowTranslationService = binder.getService(mScreenShotter);
+            WorkService.ShowTranslationBinder binder = (WorkService.ShowTranslationBinder)iBinder;
+            mWorkService = binder.getService();
             mBound = true;
         }
 
@@ -205,29 +199,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    /**
-     * 旋转图片
-     *
-     * @param angle
-     * @param bitmap
-     * @return
-     */
-    public static Bitmap rotaingImageView(int angle, Bitmap bitmap)
-    {
-        // 旋转图片 动作
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-
-        // 创建新的图片
-        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        if (resizedBitmap != bitmap && bitmap != null && !bitmap.isRecycled())
-        {
-            bitmap.recycle();
-            bitmap = null;
-        }
-        return resizedBitmap;
-    }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -255,6 +226,30 @@ public class MainActivity extends AppCompatActivity {
     interface RequestPermissionResult{
         void successCallback(int resultCode, Intent data);
     }
+
+    /**
+     * 旋转图片
+     *
+     * @param angle
+     * @param bitmap
+     * @return
+     */
+//    public static Bitmap rotaingImageView(int angle, Bitmap bitmap)
+//    {
+//        // 旋转图片 动作
+//        Matrix matrix = new Matrix();
+//        matrix.postRotate(angle);
+//
+//        // 创建新的图片
+//        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
+//                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//        if (resizedBitmap != bitmap && bitmap != null && !bitmap.isRecycled())
+//        {
+//            bitmap.recycle();
+//            bitmap = null;
+//        }
+//        return resizedBitmap;
+//    }
 
 
 }
