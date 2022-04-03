@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // 创建截屏按钮
                 requestOverlayPermission();
-                mWorkService.createScreenShotButton();
+//                mWorkService.createScreenShotButton();
+                mWorkService.createFloatContainer();
             }
         });
 

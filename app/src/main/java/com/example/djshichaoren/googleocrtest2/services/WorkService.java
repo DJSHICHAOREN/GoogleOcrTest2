@@ -3,6 +3,7 @@ package com.example.djshichaoren.googleocrtest2.services;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.djshichaoren.googleocrtest2.core.view.suspend_view.FloatContainer;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.ui.element.InteractionMessageFactory;
@@ -249,6 +251,20 @@ public class WorkService extends Service {
             }
         });
         windowManager.addView(button, mLayoutParams);
+    }
+
+    public void createFloatContainer(){
+//        mLayoutParams.format = PixelFormat.RGBA_8888;
+        mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
+        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        mLayoutParams.width = 500;
+        mLayoutParams.height = 100;
+        mLayoutParams.x = 300;
+        mLayoutParams.y = 300;
+        FloatContainer floatContainer = new FloatContainer(getApplicationContext());
+        floatContainer.setBackgroundColor(Color.parseColor("#ff0000"));
+        floatContainer.show(mLayoutParams);
+
     }
 
     /**
