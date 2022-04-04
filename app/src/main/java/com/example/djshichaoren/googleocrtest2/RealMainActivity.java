@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
-import com.example.djshichaoren.googleocrtest2.util.OrientationChangeCallback;
+import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 
@@ -44,7 +44,13 @@ public class RealMainActivity extends AppCompatActivity {
         mScreenShotter = ScreenShotter.newInstance();
 
         // 屏幕旋转监听
-        OrientationChangeCallback oritationChangeCallback = new OrientationChangeCallback(getApplicationContext(), mScreenShotter);
+        OrientationChangeListener oritationChangeCallback = new OrientationChangeListener(getApplicationContext());
+        oritationChangeCallback.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
+            @Override
+            public void onOrientationChanged(boolean isHorizontal) {
+
+            }
+        });
         oritationChangeCallback.enable();
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 

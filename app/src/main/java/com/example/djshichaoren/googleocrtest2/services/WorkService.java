@@ -27,6 +27,7 @@ import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.util.ScreenUtil;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 
 import java.util.ArrayList;
@@ -254,15 +255,17 @@ public class WorkService extends Service {
     }
 
     public void createFloatContainer(){
+        int screenWidth = ScreenUtil.getScreenWidth(this);
+        int screenHeight = ScreenUtil.getScreenHeight(this);
+
 //        mLayoutParams.format = PixelFormat.RGBA_8888;
         mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        mLayoutParams.width = 500;
+        mLayoutParams.width = screenWidth * 2;
         mLayoutParams.height = 100;
-        mLayoutParams.x = 300;
-        mLayoutParams.y = 300;
+        mLayoutParams.x = 0;
+        mLayoutParams.y = screenHeight / 3 * 2;
         FloatContainer floatContainer = new FloatContainer(getApplicationContext());
-        floatContainer.setBackgroundColor(Color.parseColor("#ff0000"));
         floatContainer.show(mLayoutParams);
 
     }

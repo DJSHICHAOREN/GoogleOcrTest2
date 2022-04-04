@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.test.GoogleOcrTester;
-import com.example.djshichaoren.googleocrtest2.util.OrientationChangeCallback;
+import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 import com.example.djshichaoren.googleocrtest2.util.image.BitmapSaver;
@@ -68,8 +68,21 @@ public class MainActivity extends AppCompatActivity {
         mScreenShotter.setWindowManager(getWindowManager());
 
         // 屏幕旋转监听
-        OrientationChangeCallback oritationChangeCallback = new OrientationChangeCallback(getApplicationContext(), mScreenShotter);
-        oritationChangeCallback.enable();
+        OrientationChangeListener orientationChangeListener = new OrientationChangeListener(getApplicationContext());
+        orientationChangeListener.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
+            @Override
+            public void onOrientationChanged(boolean isHorizontal) {
+                // 设置获取屏幕区域对象
+                if(isHorizontal){
+                    ScreenLocationCalculator.setOrientationHorizontal();
+                }
+                else{
+                    ScreenLocationCalculator.setOrientationVertical();
+                }
+
+            }
+        });
+        orientationChangeListener.enable();
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
         // 请求权限
