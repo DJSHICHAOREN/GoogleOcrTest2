@@ -3,7 +3,6 @@ package com.example.djshichaoren.googleocrtest2.services;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.Build;
@@ -258,15 +257,8 @@ public class WorkService extends Service {
         int screenWidth = ScreenUtil.getScreenWidth(this);
         int screenHeight = ScreenUtil.getScreenHeight(this);
 
-//        mLayoutParams.format = PixelFormat.RGBA_8888;
-        mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
-        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        mLayoutParams.width = screenWidth * 2;
-        mLayoutParams.height = 100;
-        mLayoutParams.x = 0;
-        mLayoutParams.y = screenHeight / 3 * 2;
         FloatContainer floatContainer = new FloatContainer(getApplicationContext());
-        floatContainer.show(mLayoutParams);
+        floatContainer.showOrUpdate(mLayoutParams);
 
     }
 
