@@ -23,26 +23,29 @@ public class OrientationChangeListener extends OrientationEventListener {
 
     @Override
     public void onOrientationChanged(int orientation) {
-        if(orientation != mOrientation){
-            mOrientation = orientation;
-            Log.d("lwd", "orientation:" + orientation);
-            // 当前屏幕是否横着
-            boolean isHorizontal = false;
-            if( (mOrientation > 45 && mOrientation < 135) || (mOrientation > 225 && mOrientation < 315) ){
-                isHorizontal = true;
-            }
-            // 判断屏幕方向是否改变
-            if(mIsHorizontal != isHorizontal){
-                Log.d("lwd", "change orientation is horizontal：" + isHorizontal);
-
-                mIsHorizontal = isHorizontal;
-
-                if(mChangeCallback != null){
-                    mChangeCallback.onOrientationChanged(isHorizontal);
+        synchronized (this){
+            if(orientation != mOrientation){
+                mOrientation = orientation;
+                Log.d("lwd", "orientation:" + orientation);
+                // 当前屏幕是否横着
+                boolean isHorizontal = false;
+                if( (mOrientation > 45 && mOrientation < 135) || (mOrientation > 225 && mOrientation < 315) ){
+                    isHorizontal = true;
                 }
+                // 判断屏幕方向是否改变
+                if(mIsHorizontal != isHorizontal){
+                    Log.d("lwd", "change orientation is horizontal：" + isHorizontal);
 
+                    mIsHorizontal = isHorizontal;
+
+                    if(mChangeCallback != null){
+                        mChangeCallback.onOrientationChanged(isHorizontal);
+                    }
+
+                }
             }
         }
+
     }
 
     public void setChangeCallback(ChangeCallback changeCallback){
