@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -57,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
         btn_show_screen_shot_button = findViewById(R.id.btn_show_screen_shot_button);
         btn_show_screen_shot_image = findViewById(R.id.btn_show_screen_shot_image);
         btn_start_recognize_screen_service = findViewById(R.id.btn_start_recognize_screen_service);
+
         // 去掉state bar
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().setStatusBarColor(Color.parseColor("#000000"));
 
         mContext = getApplicationContext();
         //获取MediaProjectionManager实例
