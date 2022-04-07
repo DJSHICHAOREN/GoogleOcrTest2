@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenUtil;
 
@@ -129,7 +130,7 @@ public class FloatContainer extends FrameLayout {
                         mWindowManagerParams.width = thisWidth;
                         mWindowManagerParams.height = thisHeight;
 
-                        Log.d("lwd", "scale:" + scale + " thisWidth:" + thisWidth + " thisHeight:" + thisHeight);
+//                        Log.d("lwd", "scale:" + scale + " thisWidth:" + thisWidth + " thisHeight:" + thisHeight);
                         mWindowManager.updateViewLayout(this, mWindowManagerParams);
 
                         twoFigureDistance = twoFigureDistanceNew;
@@ -137,7 +138,7 @@ public class FloatContainer extends FrameLayout {
                     }
 
 
-                    Log.d("lwd", "ACTION_MOVE");
+//                    Log.d("lwd", "ACTION_MOVE");
                     break;
                 case MotionEvent.ACTION_POINTER_DOWN:
 
@@ -145,12 +146,12 @@ public class FloatContainer extends FrameLayout {
 
                     twoFigureDistance = getTwoFigureDistance(event);
 
-                    Log.d("lwd", "ACTION_POINTER_DOWN");
+//                    Log.d("lwd", "ACTION_POINTER_DOWN");
                     break;
                 case MotionEvent.ACTION_POINTER_UP:
                     isTwoFigureTouch = false;
 
-                    Log.d("lwd", "ACTION_POINTER_UP");
+//                    Log.d("lwd", "ACTION_POINTER_UP");
 
                     break;
             }
@@ -177,8 +178,6 @@ public class FloatContainer extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-
     }
 
     public void showOrUpdate(WindowManager.LayoutParams layoutParams){
@@ -205,7 +204,10 @@ public class FloatContainer extends FrameLayout {
         thisHeight = mWindowManagerParams.height;
     }
 
-    private void setLayoutParams(){
-
+    public BoundingBox getMyBoundingBox(){
+        if(mWindowManagerParams != null){
+            return new BoundingBox(mWindowManagerParams.x, mWindowManagerParams.y, mWindowManagerParams.width, mWindowManagerParams.height);
+        }
+        return new BoundingBox();
     }
 }

@@ -18,15 +18,16 @@ import android.widget.ImageView;
 
 import com.example.djshichaoren.googleocrtest2.core.view.suspend_view.FloatContainer;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
+import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.ui.element.InteractionMessageFactory;
 import com.example.djshichaoren.googleocrtest2.ui.element.TranslationResultFactory;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
+import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
-import com.example.djshichaoren.googleocrtest2.util.ScreenUtil;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class WorkService extends Service {
     private TranslationResultFactory mTranslationResultFactory;
     private View mTranslationResultView;
     private ImageView mScreenShotView;
+    private FloatContainer mFloatContainer;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -254,12 +256,8 @@ public class WorkService extends Service {
     }
 
     public void createFloatContainer(){
-        int screenWidth = ScreenUtil.getScreenWidth(this);
-        int screenHeight = ScreenUtil.getScreenHeight(this);
-
-        FloatContainer floatContainer = new FloatContainer(getApplicationContext());
-        floatContainer.showOrUpdate(mLayoutParams);
-
+        mFloatContainer = new FloatContainer(getApplicationContext());
+        mFloatContainer.showOrUpdate(mLayoutParams);
     }
 
     /**
@@ -272,19 +270,35 @@ public class WorkService extends Service {
             mScreenShotter = ScreenShotter.newInstance();
         }
 
+        if(mFloatContainer == null){
+            createFloatContainer();
+        }
+
         final Handler mRecognizeHandler = new Handler();
         mRecognizeHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(mScreenShotter == null) return;
-
-                Log.d("lwd", "recognize screen once");
                 Bitmap screenImage = mScreenShotter.takeScreenshot();
 
+                BoundingBox boundingBox = mFloatContainer.getMyBoundingBox();
+
+                screenImage = ImageCuttingUtil.cutBottomImageFromY(screenImage, boundingBox);
+
+                RecognitionResult content = null;
                 if(screenImage != null){
                     ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(screenImage);
                     RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
-                    showInteractionMessage(recognitionResult);
+
+//                    showInteractionMessage(recognitionResult);
+                    content = recognitionResult;
+
+                }
+
+                if(content == null){
+//                    Log.d("lwd", "content is null");
+                }
+                else{
+                    Log.d("lwd", "content is :" + content.mContent);
                 }
 
                 mRecognizeHandler.postDelayed(this, TIME);

@@ -94,7 +94,7 @@ public class ScreenShotter {
 
         int width = image.getWidth();
         int height = image.getHeight();
-        Log.d("lwd", "width:" + image.getWidth() + " height:" + image.getHeight());
+//        Log.d("lwd", "width:" + image.getWidth() + " height:" + image.getHeight());
 
         final Image.Plane[] planes = image.getPlanes();
         final ByteBuffer buffer = planes[0].getBuffer();
@@ -106,16 +106,12 @@ public class ScreenShotter {
         bitmap = Bitmap.createBitmap(bitmap, 0, 0,width, height);
         image.close();
 
-        bitmap = ImageRenderTool.removePictureTransparencyPart(bitmap);
+//        bitmap = ImageRenderTool.removePictureTransparencyPart(bitmap);
 
+//        double cropHeight = 1.0 / 2;
+//        int yStart = (int)(bitmap.getHeight() * (1 - cropHeight));
+//        int yHeight = (int)(bitmap.getHeight() - yStart);
 
-
-        double cropHeight = 1.0 / 2;
-        int yStart = (int)(bitmap.getHeight() * (1 - cropHeight));
-        int yHeight = (int)(bitmap.getHeight() * cropHeight - 1);
-
-//        bitmap = Bitmap.createBitmap(bitmap, 0, yStart,
-//                bitmap.getWidth(), yHeight);
 //        bitmap = ImageRenderTool.whiteRestPartOfImage(bitmap, yStart, yStart + yHeight);
 //        bitmap = Bitmap.createBitmap(bitmap, 0, 1354,
 //                bitmap.getWidth(), 28);

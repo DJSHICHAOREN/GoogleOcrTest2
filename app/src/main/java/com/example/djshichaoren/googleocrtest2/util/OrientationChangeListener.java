@@ -26,7 +26,7 @@ public class OrientationChangeListener extends OrientationEventListener {
         synchronized (this){
             if(orientation != mOrientation){
                 mOrientation = orientation;
-                Log.d("lwd", "orientation:" + orientation);
+//                Log.d("lwd", "orientation:" + orientation);
                 // 当前屏幕是否横着
                 boolean isHorizontal = false;
                 if( (mOrientation > 45 && mOrientation < 135) || (mOrientation > 225 && mOrientation < 315) ){

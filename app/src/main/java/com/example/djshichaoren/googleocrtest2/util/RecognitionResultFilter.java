@@ -39,20 +39,17 @@ public class RecognitionResultFilter {
             }
         }
 
-        if(candidateResult.mTop < 100){
-            return null;
-        }
-
         // 当上次的识别值与这次识别值相同时返回null
         if(mLatestRecognitionResult != null &&
                 mLatestRecognitionResult.isSimilar(candidateResult)){
-            Log.d("lwd", "rec get same content top:" + candidateResult.mTop);
+//            Log.d("lwd", "rec get same content top:" + candidateResult.mTop);
             return null;
         }
 
-        Log.d("lwd", "candidateResult top:" + candidateResult.mTop + " left:" + candidateResult.mLeft);
+//        Log.d("lwd", "candidateResult top:" + candidateResult.mTop + " left:" + candidateResult.mLeft);
 
         mLatestRecognitionResult = candidateResult;
+
         return candidateResult;
     }
 
