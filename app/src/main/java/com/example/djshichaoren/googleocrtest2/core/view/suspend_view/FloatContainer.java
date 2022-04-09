@@ -2,6 +2,7 @@ package com.example.djshichaoren.googleocrtest2.core.view.suspend_view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -180,9 +181,14 @@ public class FloatContainer extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void showOrUpdate(WindowManager.LayoutParams layoutParams){
-        // 在对象中创建layoutParams会报错
-//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+    public void showOrUpdate(){
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        if (Build.VERSION.SDK_INT >= 26) {
+            //8.0新特性
+            layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }else {
+            layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
         layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         layoutParams.width = mScreenWidth * 10;

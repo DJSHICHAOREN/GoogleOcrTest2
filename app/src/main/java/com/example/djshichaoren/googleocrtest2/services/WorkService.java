@@ -116,26 +116,32 @@ public class WorkService extends Service {
         if(recognitionResult == null){
             return;
         }
-        Log.d("lwd", "recognize result content: "+ recognitionResult.mContent +
-                " top:" + recognitionResult.mTop + " left:" + recognitionResult.mLeft +
-                " height:" + recognitionResult.mHeight + " width:" + recognitionResult.mWidth);
+//        Log.d("lwd", "recognize result content: "+ recognitionResult.mContent +
+//                " top:" + recognitionResult.mTop + " left:" + recognitionResult.mLeft +
+//                " height:" + recognitionResult.mHeight + " width:" + recognitionResult.mWidth);
 
         if(mInteractionMessageView != null){
             windowManager.removeView(mInteractionMessageView);
         }
         mInteractionMessageView = mInteractionMessageFactory.getInteractionMessage(recognitionResult.mContent, new TranslationResultDisplayer());
 
-        mLayoutParams.format = PixelFormat.RGBA_8888;
-        mLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
-        mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        if (Build.VERSION.SDK_INT >= 26) {
+            //8.0新特性
+            layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }else {
+            layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
+        layoutParams.format = PixelFormat.RGBA_8888;
+        layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         ScreenLocationCalculator.Region region = mScreenLocationCalculator.getTopRegion();
-        mLayoutParams.x = region.startPoint.x;
-        mLayoutParams.y = region.height  / 2;
-        Log.d("lwd", "LayoutParams x:" + mLayoutParams.x + " y:" + mLayoutParams.y);
-        mLayoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        layoutParams.x = region.startPoint.x;
+        layoutParams.y = region.height  / 2;
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-        windowManager.addView(mInteractionMessageView, mLayoutParams);
+        windowManager.addView(mInteractionMessageView, layoutParams);
     }
 
     /**
@@ -257,7 +263,7 @@ public class WorkService extends Service {
 
     public void createFloatContainer(){
         mFloatContainer = new FloatContainer(getApplicationContext());
-        mFloatContainer.showOrUpdate(mLayoutParams);
+        mFloatContainer.showOrUpdate();
     }
 
     /**
@@ -289,7 +295,7 @@ public class WorkService extends Service {
                     ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(screenImage);
                     RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
 
-//                    showInteractionMessage(recognitionResult);
+                    showInteractionMessage(recognitionResult);
                     content = recognitionResult;
 
                 }
