@@ -36,24 +36,24 @@ public class FloatContainer extends FrameLayout {
         mScreenHeight = ScreenUtil.getScreenHeight(mContext);
 
         // 屏幕旋转监听
-        OrientationChangeListener orientationChangeListener = new OrientationChangeListener(context);
-        orientationChangeListener.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
+//        OrientationChangeListener orientationChangeListener = new OrientationChangeListener(context);
+        OrientationChangeListener.addChangeCallback(new OrientationChangeListener.ChangeCallback() {
             @Override
             public void onOrientationChanged(boolean isHorizontal) {
                 if(!isHorizontal){
-                    mScreenWidth = ScreenUtil.getScreenWidth(mContext);
-                    mScreenHeight = ScreenUtil.getScreenHeight(mContext);
+                    mScreenWidth = Math.min(ScreenUtil.getScreenWidth(mContext), ScreenUtil.getScreenHeight(mContext));
+                    mScreenHeight = Math.max(ScreenUtil.getScreenWidth(mContext), ScreenUtil.getScreenHeight(mContext));
                 }
                 else{
-                    mScreenHeight = ScreenUtil.getScreenWidth(mContext);
-                    mScreenWidth = ScreenUtil.getScreenHeight(mContext);
+                    mScreenWidth = Math.max(ScreenUtil.getScreenWidth(mContext), ScreenUtil.getScreenHeight(mContext));
+                    mScreenHeight = Math.min(ScreenUtil.getScreenWidth(mContext), ScreenUtil.getScreenHeight(mContext));
                 }
                 if(FloatContainer.this.getLayoutParams() instanceof WindowManager.LayoutParams){
                     showOrUpdate();
                 }
             }
         });
-        orientationChangeListener.enable();
+//        orientationChangeListener.enable();
 
     }
 
@@ -205,12 +205,12 @@ public class FloatContainer extends FrameLayout {
 
         if(mWindowManagerParams == null){
             mWindowManager.addView(this, layoutParams);
-            mWindowManagerParams = (WindowManager.LayoutParams) this.getLayoutParams();
         }
         else{
             mWindowManager.updateViewLayout(this, layoutParams);
         }
 
+        mWindowManagerParams = (WindowManager.LayoutParams) this.getLayoutParams();
         thisX = mWindowManagerParams.x;
         thisY = mWindowManagerParams.y;
         thisWidth = mWindowManagerParams.width;

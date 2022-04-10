@@ -6,6 +6,9 @@ import android.view.OrientationEventListener;
 
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 类描述：
  * 修改人：DJSHICHAOREN
@@ -16,7 +19,7 @@ public class OrientationChangeListener extends OrientationEventListener {
     static int mOrientation = 0;
     static boolean mIsHorizontal = false;
 
-    private ChangeCallback mChangeCallback;
+    private static List<ChangeCallback> mChangeCallbackList = new ArrayList<>();
     public OrientationChangeListener(Context context) {
         super(context);
     }
@@ -34,12 +37,14 @@ public class OrientationChangeListener extends OrientationEventListener {
                 }
                 // 判断屏幕方向是否改变
                 if(mIsHorizontal != isHorizontal){
-                    Log.d("lwd", "change orientation is horizontal：" + isHorizontal);
+//                    Log.d("lwd", "change orientation is horizontal：" + isHorizontal);
 
                     mIsHorizontal = isHorizontal;
 
-                    if(mChangeCallback != null){
-                        mChangeCallback.onOrientationChanged(isHorizontal);
+                    if(mChangeCallbackList != null){
+                        for (ChangeCallback changeCallback: mChangeCallbackList) {
+                            changeCallback.onOrientationChanged(isHorizontal);
+                        }
                     }
 
                 }
@@ -48,8 +53,11 @@ public class OrientationChangeListener extends OrientationEventListener {
 
     }
 
-    public void setChangeCallback(ChangeCallback changeCallback){
-        mChangeCallback = changeCallback;
+    // 需要使用观察者模式，否则当有多个对象监听时，会出现有的对象监听不到的情况
+    public static void addChangeCallback(ChangeCallback changeCallback){
+        if(changeCallback != null){
+            mChangeCallbackList.add(changeCallback);
+        }
     }
 
     public interface ChangeCallback{

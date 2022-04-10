@@ -45,7 +45,7 @@ public class RealMainActivity extends AppCompatActivity {
 
         // 屏幕旋转监听
         OrientationChangeListener oritationChangeCallback = new OrientationChangeListener(getApplicationContext());
-        oritationChangeCallback.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
+        oritationChangeCallback.addChangeCallback(new OrientationChangeListener.ChangeCallback() {
             @Override
             public void onOrientationChanged(boolean isHorizontal) {
 

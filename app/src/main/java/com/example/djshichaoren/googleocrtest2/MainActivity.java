@@ -73,19 +73,20 @@ public class MainActivity extends AppCompatActivity {
 
         // 屏幕旋转监听
         OrientationChangeListener orientationChangeListener = new OrientationChangeListener(getApplicationContext());
-//        orientationChangeListener.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
-//            @Override
-//            public void onOrientationChanged(boolean isHorizontal) {
-//                // 设置获取屏幕区域对象
-//                if(isHorizontal){
-//                    ScreenLocationCalculator.setOrientationHorizontal();
-//                }
-//                else{
-//                    ScreenLocationCalculator.setOrientationVertical();
-//                }
-//
-//            }
-//        });
+        OrientationChangeListener.addChangeCallback(new OrientationChangeListener.ChangeCallback() {
+            @Override
+            public void onOrientationChanged(boolean isHorizontal) {
+                // 设置获取屏幕区域对象
+                if(isHorizontal){
+                    ScreenLocationCalculator.setOrientationHorizontal();
+                }
+                else{
+                    ScreenLocationCalculator.setOrientationVertical();
+                }
+//                Log.d("lwd", "change orientation MainActivity isHorizontal:" + isHorizontal);
+
+            }
+        });
         orientationChangeListener.enable();
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
