@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,5 +55,12 @@ public class InteractionShowView extends FloatContainer {
             mWordLinearLayout.addView(wordView, layoutParams);
         }
 
+    }
+
+    @Override
+    public WindowManager.LayoutParams generateLayoutParams() {
+        WindowManager.LayoutParams layoutParams = super.generateLayoutParams();
+
+        return layoutParams;
     }
 }

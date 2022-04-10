@@ -36,24 +36,24 @@ public class FloatContainer extends FrameLayout {
         mScreenHeight = ScreenUtil.getScreenHeight(mContext);
 
         // 屏幕旋转监听
-//        OrientationChangeListener orientationChangeListener = new OrientationChangeListener(context);
-//        orientationChangeListener.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
-//            @Override
-//            public void onOrientationChanged(boolean isHorizontal) {
-//                if(!isHorizontal){
-//                    mScreenWidth = ScreenUtil.getScreenWidth(mContext);
-//                    mScreenHeight = ScreenUtil.getScreenHeight(mContext);
-//                }
-//                else{
-//                    mScreenHeight = ScreenUtil.getScreenWidth(mContext);
-//                    mScreenWidth = ScreenUtil.getScreenHeight(mContext);
-//                }
-//                if(FloatContainer.this.getLayoutParams() instanceof WindowManager.LayoutParams){
-//                    showOrUpdate((WindowManager.LayoutParams)FloatContainer.this.getLayoutParams());
-//                }
-//            }
-//        });
-//        orientationChangeListener.enable();
+        OrientationChangeListener orientationChangeListener = new OrientationChangeListener(context);
+        orientationChangeListener.setChangeCallback(new OrientationChangeListener.ChangeCallback() {
+            @Override
+            public void onOrientationChanged(boolean isHorizontal) {
+                if(!isHorizontal){
+                    mScreenWidth = ScreenUtil.getScreenWidth(mContext);
+                    mScreenHeight = ScreenUtil.getScreenHeight(mContext);
+                }
+                else{
+                    mScreenHeight = ScreenUtil.getScreenWidth(mContext);
+                    mScreenWidth = ScreenUtil.getScreenHeight(mContext);
+                }
+                if(FloatContainer.this.getLayoutParams() instanceof WindowManager.LayoutParams){
+                    showOrUpdate();
+                }
+            }
+        });
+        orientationChangeListener.enable();
 
     }
 
@@ -181,7 +181,7 @@ public class FloatContainer extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void showOrUpdate(){
+    public WindowManager.LayoutParams generateLayoutParams(){
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= 26) {
             //8.0新特性
@@ -191,10 +191,17 @@ public class FloatContainer extends FrameLayout {
         }
         layoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        layoutParams.width = mScreenWidth * 10;
+        layoutParams.width = mScreenWidth - 100;
         layoutParams.height = 100;
         layoutParams.x = 0;
         layoutParams.y = mScreenHeight / 3 * 2;
+
+        Log.d("lwd", "change orientation width:" + layoutParams.width);
+        return layoutParams;
+    }
+
+    public void showOrUpdate(){
+        WindowManager.LayoutParams layoutParams = generateLayoutParams();
 
         if(mWindowManagerParams == null){
             mWindowManager.addView(this, layoutParams);

@@ -12,14 +12,11 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import com.example.djshichaoren.googleocrtest2.core.view.InteractionShowView;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
-import com.example.djshichaoren.googleocrtest2.ui.element.InteractionMessageFactory;
 import com.example.djshichaoren.googleocrtest2.ui.element.TranslationResultFactory;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
@@ -176,7 +173,7 @@ public class WorkService extends Service {
 
     }
 
-    public void createInteactionShowView(){
+    public void createInteractionShowView(){
         mInteractionShowView = new InteractionShowView(getApplicationContext());
         mInteractionShowView.showOrUpdate();
     }
@@ -192,7 +189,7 @@ public class WorkService extends Service {
         }
 
         if(mInteractionShowView == null){
-            createInteactionShowView();
+            createInteractionShowView();
         }
 
         final Handler mRecognizeHandler = new Handler();
