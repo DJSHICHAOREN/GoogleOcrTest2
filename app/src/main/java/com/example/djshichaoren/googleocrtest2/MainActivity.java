@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
         // 请求权限
         requestMediaProjectPermission();
-        requestOverlayPermission();
+
+//        requestOverlayPermission();
 
         // 测试识别组件
         btn_show_translation.setOnClickListener(new View.OnClickListener() {

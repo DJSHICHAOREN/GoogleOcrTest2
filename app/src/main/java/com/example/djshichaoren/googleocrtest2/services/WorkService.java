@@ -177,6 +177,13 @@ public class WorkService extends Service {
         public void display(String word){
             Log.d("lwd", "display translation result");
 
+            WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
+            if (Build.VERSION.SDK_INT >= 26) {
+                //8.0新特性
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+            }else {
+                mLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+            }
             mLayoutParams.format = PixelFormat.RGBA_8888;
             mLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
             mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
