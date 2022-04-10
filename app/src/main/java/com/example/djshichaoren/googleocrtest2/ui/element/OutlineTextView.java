@@ -64,11 +64,13 @@ public class OutlineTextView extends TextView {
         super.setTextColor(color);
     }
 
+    // 设置文字外围颜色
     public void setOutlineColor(int color) {
         outlineColor = color;
         invalidate();
     }
 
+    // 设置文字外围粗细
     public void setOutlineWidth(float width) {
         setOutlineStrokeWidth(width);
         invalidate();

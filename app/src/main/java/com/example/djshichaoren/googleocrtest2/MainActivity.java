@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 // 创建截屏按钮
                 requestOverlayPermission();
 //                mWorkService.createScreenShotButton();
-                mWorkService.createFloatContainer();
+                mWorkService.createInteactionShowView();
             }
         });
 

@@ -13,8 +13,8 @@ import java.util.List;
  * 修改备注：
  */
 public class RecognitionResultFilter {
-    private RecognitionResult mLatestRecognitionResult;
-    private RecognitionResult mDefaultRecognitionResult = new RecognitionResult(0,0,0,0, "empty");
+    private static RecognitionResult mLatestRecognitionResult;
+    private static RecognitionResult mDefaultRecognitionResult = new RecognitionResult(0,0,0,0, "empty");
     /**
      * 过滤识别结果
      * 1.避免重复显示
@@ -26,7 +26,7 @@ public class RecognitionResultFilter {
      * 记录长度的前两名，如果第一名与上一个相似，且位置差距很大，则采用第二个
      * @return
      */
-    public RecognitionResult filter(List<RecognitionResult> recognitionResultList){
+    public static RecognitionResult filter(List<RecognitionResult> recognitionResultList){
         // 若没有识别结果，则返回null
         if(recognitionResultList.size() < 1){
             return null;

@@ -32,6 +32,12 @@ public class InteractionMessageFactory {
      * 初始化外部包围的控件
      */
     public void initContainer(){
+
+    }
+
+    public View getInteractionMessage(String englishSentence,
+                                      final WorkService.TranslationResultDisplayer translationResultDisplayer){
+
         rlWholeWidthLayout = new RelativeLayout(mContext);
 
         llWordList = new LinearLayout(mContext);
@@ -41,12 +47,6 @@ public class InteractionMessageFactory {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
 
         rlWholeWidthLayout.addView(llWordList, layoutParams);
-    }
-
-    public View getInteractionMessage(String englishSentence,
-                                      final WorkService.TranslationResultDisplayer translationResultDisplayer){
-        // 翻译句子
-        // translationResultDisplayer.translateSentence(englishSentence);
 
         //TODO:可以通过改变LinearLayout中的Element内容的方法避免对Element操作
         int wordListSize = llWordList.getChildCount();
@@ -59,7 +59,7 @@ public class InteractionMessageFactory {
         String[] wordsArray = englishSentence.split("\\s+");
         for(final String word : wordsArray){
             OutlineTextView wordView = mElementPool.getFloatElement();
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
             wordView.setText(word);
             wordView.setTextSize(18);
@@ -76,7 +76,7 @@ public class InteractionMessageFactory {
                 }
             });
             // 添加到LinearLayout
-            llWordList.addView(wordView, layoutParams);
+            llWordList.addView(wordView, layoutParams1);
         }
 
         return rlWholeWidthLayout;
