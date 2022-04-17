@@ -2,6 +2,7 @@ package com.example.djshichaoren.googleocrtest2.core.view.suspend_view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
@@ -181,6 +182,10 @@ public class FloatContainer extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    /**
+     * 设置控件的大小、位置等信息
+     * @return
+     */
     public WindowManager.LayoutParams generateLayoutParams(){
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= 26) {
@@ -202,6 +207,9 @@ public class FloatContainer extends FrameLayout {
 
     public void showOrUpdate(){
         WindowManager.LayoutParams layoutParams = generateLayoutParams();
+
+        // 设置窗口支持透明度
+        layoutParams.format = PixelFormat.TRANSPARENT;
 
         if(mWindowManagerParams == null){
             mWindowManager.addView(this, layoutParams);

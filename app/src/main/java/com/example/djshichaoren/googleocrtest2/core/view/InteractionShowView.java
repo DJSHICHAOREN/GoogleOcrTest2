@@ -2,6 +2,9 @@ package com.example.djshichaoren.googleocrtest2.core.view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -13,10 +16,17 @@ import com.example.djshichaoren.googleocrtest2.core.view.suspend_view.FloatConta
 
 import androidx.annotation.NonNull;
 
-public class InteractionShowView extends FloatContainer {
+public class InteractionShowView extends FloatContainer{
 
     private LinearLayout mWordLinearLayout;
     private Context mContext;
+    private int CLICKED_BACKGROUND_COLOR = Color.parseColor("#33000000");
+    private int UNCLICKED_BACKGROUND_COLOR = Color.parseColor("#000000");
+
+    private int CLICKED_TEXT_COLOR = Color.parseColor("#33FFFFFF");
+    private int UNCLICKED_TEXT_COLOR = Color.parseColor("#FFFFFF");
+
+    private boolean mIsFigureDown = false;
 
 
     public InteractionShowView(@NonNull Context context) {
@@ -28,7 +38,9 @@ public class InteractionShowView extends FloatContainer {
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT
                 , ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
         this.addView(mWordLinearLayout, layoutParams);
+
     }
 
     public void updateSentence(String sentence){
@@ -41,9 +53,8 @@ public class InteractionShowView extends FloatContainer {
                     LinearLayout.LayoutParams.WRAP_CONTENT);
             wordView.setText(word);
             wordView.setTextSize(18);
-            wordView.setTextColor(Color.WHITE);
             wordView.setPadding(0, 0, 20, 0);
-            wordView.setTextColor(Color.WHITE);
+            wordView.setTextColor(mIsFigureDown ? CLICKED_TEXT_COLOR : UNCLICKED_TEXT_COLOR);
             wordView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -51,10 +62,44 @@ public class InteractionShowView extends FloatContainer {
 
                 }
             });
+
             // 添加到LinearLayout
             mWordLinearLayout.addView(wordView, layoutParams);
         }
 
+    }
+
+    private void setTextColor(int color){
+        if(mWordLinearLayout == null) return;
+
+        int textViewCount = mWordLinearLayout.getChildCount();
+
+        for(int i = 0; i < textViewCount; i++){
+            View view = mWordLinearLayout.getChildAt(i);
+            if(view instanceof TextView){
+                TextView textView = (TextView)view;
+                textView.setTextColor(color);
+            }
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                setBackgroundColor(CLICKED_BACKGROUND_COLOR);
+                setTextColor(CLICKED_TEXT_COLOR);
+                mIsFigureDown = true;
+                break;
+
+            case MotionEvent.ACTION_UP:
+                setBackgroundColor(UNCLICKED_BACKGROUND_COLOR);
+                setTextColor(UNCLICKED_TEXT_COLOR);
+                mIsFigureDown = false;
+                break;
+        }
+
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -63,4 +108,5 @@ public class InteractionShowView extends FloatContainer {
 
         return layoutParams;
     }
+
 }
