@@ -13,19 +13,19 @@ import java.util.List;
  * 修改备注：
  */
 public class StringCleaner {
-    private List<String> punctuationList;
+    private static List<String> punctuationList;
     public StringCleaner(){
         punctuationList = Arrays.asList(".", "," ,"'s","?","!","@","#","$", "%","&","*","/", ";","-","+","=","[","]");
     }
 
-    public String cleanWordString(String word){
-        word = word.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\|\\]", "");
+    public static String cleanWordString(String word){
+        word = word.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|||\\]", "");
         word = word.toLowerCase();
         return word;
     }
 
-    public String cleanSentenceString(String sentence){
-        sentence = sentence.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\|\\]", " ");
+    public static String cleanSentenceString(String sentence){
+        sentence = sentence.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|\\]", " ");
         sentence = sentence.toLowerCase();
         return sentence;
     }

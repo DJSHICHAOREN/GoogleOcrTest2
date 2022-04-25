@@ -13,10 +13,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.example.djshichaoren.googleocrtest2.core.view.InteractionShowView;
+import com.example.djshichaoren.googleocrtest2.core.view.show_view.InteractionShowView;
+import com.example.djshichaoren.googleocrtest2.core.view.show_view.TranslationShowView;
+import com.example.djshichaoren.googleocrtest2.core.word.record.WordFilter;
+import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
+import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 import com.example.djshichaoren.googleocrtest2.ui.element.TranslationResultFactory;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
@@ -46,6 +50,7 @@ public class WorkService extends Service {
     private TranslationResultFactory mTranslationResultFactory;
     private View mTranslationResultView;
     private InteractionShowView mInteractionShowView;
+    private TranslationShowView mTranslationShowView;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -178,6 +183,11 @@ public class WorkService extends Service {
         mInteractionShowView.showOrUpdate();
     }
 
+    public void createTranslationShowView(){
+        mTranslationShowView = new TranslationShowView(getApplicationContext());
+        mTranslationShowView.showOrUpdate();
+    }
+
     /**
      * 开始进行识别，显示Service
      */
@@ -190,6 +200,10 @@ public class WorkService extends Service {
 
         if(mInteractionShowView == null){
             createInteractionShowView();
+        }
+
+        if(mTranslationShowView == null){
+            createTranslationShowView();
         }
 
         final Handler mRecognizeHandler = new Handler();
@@ -211,6 +225,19 @@ public class WorkService extends Service {
 
                 if(recognitionResult != null){
                     mInteractionShowView.updateSentence(recognitionResult.mContent);
+
+                    String[] wordList = WordFilter.filter(recognitionResult.mContent);
+
+                    for(String word : wordList){
+                        Translator translator = new JinshanTranslator();
+                        translator.translate(word, new Translator.TranslateCallback() {
+                            @Override
+                            public void success(TranslateResult translateResult) {
+                                mTranslationShowView.addTranslateResult(translateResult);
+                            }
+                        });
+                    }
+
                     Log.d("lwd", "content is :" + recognitionResult.mContent);
                 }
 

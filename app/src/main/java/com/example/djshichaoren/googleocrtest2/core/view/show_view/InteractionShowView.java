@@ -1,4 +1,4 @@
-package com.example.djshichaoren.googleocrtest2.core.view;
+package com.example.djshichaoren.googleocrtest2.core.view.show_view;
 
 import android.content.Context;
 import android.graphics.Color;

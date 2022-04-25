@@ -17,12 +17,10 @@ import com.example.djshichaoren.googleocrtest2.util.ScreenUtil;
 import androidx.annotation.NonNull;
 
 public class FloatContainer extends FrameLayout {
-    private boolean isDrag=false;
+    protected int mScreenWidth;
+    protected int mScreenHeight;
 
-    private int mScreenWidth;
-    private int mScreenHeight;
-
-    private Context mContext;
+    protected Context mContext;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowManagerParams;
 
@@ -85,7 +83,6 @@ public class FloatContainer extends FrameLayout {
         if (this.isEnabled()) {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
-                    isDrag=false;
                     downX = event.getRawX();
                     downY = event.getRawY();
                     break;
@@ -96,7 +93,6 @@ public class FloatContainer extends FrameLayout {
                         final float yDistance = event.getRawY() - downY;
                         //当水平或者垂直滑动距离大于10,才算拖动事件
                         if (Math.abs(xDistance) >1 ||Math.abs(yDistance)>1) {
-                            isDrag=true;
 
                             thisX += xDistance;
                             thisY += yDistance;
@@ -138,7 +134,6 @@ public class FloatContainer extends FrameLayout {
                         twoFigureDistance = twoFigureDistanceNew;
 
                     }
-
 
 //                    Log.d("lwd", "ACTION_MOVE");
                     break;
