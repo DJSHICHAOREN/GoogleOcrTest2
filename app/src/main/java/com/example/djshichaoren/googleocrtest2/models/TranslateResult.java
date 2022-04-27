@@ -16,6 +16,11 @@ public class TranslateResult {
 
     }
 
+    public TranslateResult(String word, String translation){
+        mWord = word;
+        mTranslationList.add(translation);
+    }
+
     public TranslateResult(JinshanTranslation jinshanTranslation){
         if(jinshanTranslation == null) return;
 
