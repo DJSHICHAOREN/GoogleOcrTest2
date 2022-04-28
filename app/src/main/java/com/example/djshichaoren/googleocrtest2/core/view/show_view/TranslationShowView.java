@@ -2,11 +2,12 @@ package com.example.djshichaoren.googleocrtest2.core.view.show_view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.core.view.adapter.TranslationShowViewAdapter;
 import com.example.djshichaoren.googleocrtest2.core.view.suspend_view.FloatContainer;
@@ -28,15 +29,6 @@ public class TranslationShowView extends FloatContainer {
 
     public TranslationShowView(@NonNull Context context) {
         super(context);
-
-//        mTranslateLinearLayout = new LinearLayout(context);
-//        mTranslateLinearLayout.setOrientation(LinearLayout.VERTICAL);
-//        mTranslateLinearLayout.setGravity(Gravity.CENTER_HORIZONTAL);
-//
-//        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
-//                , ViewGroup.LayoutParams.MATCH_PARENT);
-//        mTranslateLinearLayout.setBackgroundColor(Color.parseColor("#00ff00"));
-//        this.addView(mTranslateLinearLayout, layoutParams);
 
         setBackgroundColor(Color.parseColor("#10000000"));
 
@@ -64,18 +56,24 @@ public class TranslationShowView extends FloatContainer {
         mTranslationShowViewAdapter.notifyItemInserted(mTranslateResult.size() - 1);
         mRecyclerView.scrollToPosition(mTranslateResult.size() - 1);
 
-//        String content  = translateResult.mWord + ":" + translateResult.mTranslationList.get(0);
-//        TextView translateTextView = new TextView(mContext);
-//        translateTextView.setText(content);
-//        translateTextView.setTextSize(18);
-//        translateTextView.setBackgroundColor(Color.parseColor("#ff0000"));
+
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+
+//        Log.d("lwd", "onInterceptTouchEvent");
+//        switch (ev.getAction() & MotionEvent.ACTION_MASK) {
+//            case MotionEvent.ACTION_DOWN:
+//                return false;
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//                return true;
 //
-//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-//
-//        mTranslateLinearLayout.addView(translateTextView, mTranslateLinearLayout.getChildCount(), layoutParams);
+//        }
 
 
 
+        return true;
 
     }
 

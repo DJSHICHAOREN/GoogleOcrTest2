@@ -148,7 +148,7 @@ public class FloatContainer extends FrameLayout {
                 case MotionEvent.ACTION_POINTER_UP:
                     isTwoFigureTouch = false;
 
-//                    Log.d("lwd", "ACTION_POINTER_UP");
+                    Log.d("lwd", "FloatContainer ACTION_POINTER_UP");
 
                     break;
             }
