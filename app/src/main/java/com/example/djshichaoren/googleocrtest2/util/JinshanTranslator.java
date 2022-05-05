@@ -69,38 +69,4 @@ public class JinshanTranslator implements Translator {
     }
 
 
-
-    public void translate(String word,
-                          final WorkService.TranslationResultDisplayer translationResultDisplayer,
-                          final StringType stringType){
-        Call<JinshanTranslation> call = mHttpService.jinshanTranslate(word, JINSHAN_KEY, "json");
-        call.enqueue(new Callback<JinshanTranslation>() {
-            @Override
-            public void onResponse(Call<JinshanTranslation> call, Response<JinshanTranslation> response) {
-                JinshanTranslation jinshanTranslation = response.body();
-
-                if(jinshanTranslation != null){
-                    Log.d("lwd", "translation word:" + jinshanTranslation.getWord_name());
-                    if(stringType == StringType.WORD){
-                        translationResultDisplayer.setWordResult(jinshanTranslation);
-                    }
-                    else if(stringType == StringType.SENTENCE){
-                        translationResultDisplayer.setSentenceResult(jinshanTranslation);
-                    }
-                }
-                else{
-                    Log.d("lwd", "onResponse jinshanTranslation is null");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JinshanTranslation> call, Throwable t) {
-                Log.d("lwd", "onFailure get translation msg:" + t.getMessage());
-            }
-        });
-    }
-
-
-
-
 }

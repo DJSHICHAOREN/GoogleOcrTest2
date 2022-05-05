@@ -72,8 +72,6 @@ public class TranslationShowView extends FloatContainer {
 //
 //        }
 
-
-
         return true;
 
     }

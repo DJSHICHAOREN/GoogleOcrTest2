@@ -46,9 +46,6 @@ public class WorkService extends Service {
     private ShowTranslationBinder mBinder = new ShowTranslationBinder();
     private ScreenShotter mScreenShotter;
     private GoogleOcrImpl mGoogleOcrImpl;
-    private ScreenLocationCalculator mScreenLocationCalculator;
-    private TranslationResultFactory mTranslationResultFactory;
-    private View mTranslationResultView;
     private InteractionShowView mInteractionShowView;
     private TranslationShowView mTranslationShowView;
     private Translator mTranslator = new JinshanTranslator();
@@ -68,114 +65,6 @@ public class WorkService extends Service {
 
         Log.w("lwd", "Create translation service");
         mGoogleOcrImpl = GoogleOcrImpl.newInstance(getApplicationContext());
-
-        mScreenLocationCalculator = new ScreenLocationCalculator();
-
-        mTranslationResultFactory = new TranslationResultFactory(getApplicationContext());
-
-    }
-
-    /**
-     * 负责显示翻译的结果
-     * 用来在得到翻译结果以后回调
-     */
-    public class TranslationResultDisplayer{
-        private JinshanTranslator mJinshanTranslator;
-        private JinshanTranslation mSentenceResult;
-        private JinshanTranslation mWordResult;
-        private StringCleaner mStringCleaner;
-
-        public TranslationResultDisplayer(){
-            mJinshanTranslator = new JinshanTranslator();
-            mStringCleaner = new StringCleaner();
-        }
-
-        public void translateSentence(String sentence){
-            sentence = mStringCleaner.cleanSentenceString(sentence);
-            mJinshanTranslator.translate(sentence, this, JinshanTranslator.StringType.SENTENCE);
-        }
-
-        public void translateWord(String word){
-            word = mStringCleaner.cleanWordString(word);
-            mJinshanTranslator.translate(word, this, JinshanTranslator.StringType.WORD);
-
-        }
-
-        /**
-         * 显示点击单词的翻译
-         * @param word
-         */
-        public void display(String word){
-            Log.d("lwd", "display translation result");
-
-            WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
-            if (Build.VERSION.SDK_INT >= 26) {
-                //8.0新特性
-                mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-            }else {
-                mLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-            }
-            mLayoutParams.format = PixelFormat.RGBA_8888;
-            mLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
-            mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-
-            ScreenLocationCalculator.Region region = mScreenLocationCalculator.getTopRegion();
-            mLayoutParams.x = region.startPoint.x + 200;
-            mLayoutParams.y = region.startPoint.y;
-
-
-            if(mTranslationResultView == null){
-                mTranslationResultView = mTranslationResultFactory.getTranslationResult(word);
-                windowManager.addView(mTranslationResultView, mLayoutParams);
-            }
-            else{
-                mTranslationResultView = mTranslationResultFactory.getTranslationResult(word);
-                windowManager.updateViewLayout(mTranslationResultView, mLayoutParams);
-            }
-
-            // 清空result
-            mSentenceResult = null;
-            mWordResult = null;
-
-        }
-
-        public void setSentenceResult(JinshanTranslation mSentenceResult) {
-            this.mSentenceResult = mSentenceResult;
-        }
-
-        public void setWordResult(JinshanTranslation WordResult) {
-            this.mWordResult = WordResult;
-
-            // 由于Sentence是在显示整句字幕时就开始翻译，所以大概率会比单词先翻译完成
-
-            if(mWordResult != null &&
-                    mWordResult.getSymbols() != null &&
-                    mWordResult.getSymbols().get(0).getParts() != null &&
-                    mWordResult.getSymbols().get(0).getParts().get(0).getMeans() != null){
-
-                // 在句子的意思中寻找交集
-                if(mSentenceResult != null &&
-                        mSentenceResult.getSymbols() != null &&
-                        mSentenceResult.getSymbols().get(0).getParts() != null &&
-                        mSentenceResult.getSymbols().get(0).getParts().get(0).getMeans() != null){
-
-                    String sentenceTranslation = mSentenceResult.getSymbols().get(0).getParts().get(0).getMeans().get(0);
-                    Log.d("lwd", "sentence translation:" + sentenceTranslation);
-                    for(JinshanTranslation.Symbol symbol : mWordResult.getSymbols()){
-                        for(JinshanTranslation.Symbol.Part part : symbol.getParts()){
-                            for(String mean : part.getMeans()){
-                                Log.d("lwd", "mean:" + mean);
-                            }
-                        }
-                    }
-
-                }
-                // 只显示单词的第一个意思
-                else{
-                    display(mWordResult.getSymbols().get(0).getParts().get(0).getMeans().get(0));
-                }
-            }
-        }
 
     }
 
