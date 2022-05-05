@@ -20,6 +20,7 @@ public class ImageCuttingUtil {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight() - y - 1;
 
+        if(width <= 0 || height <= 0) return null;
         bitmap = Bitmap.createBitmap(bitmap, 0, y, width, height);
         return bitmap;
     }

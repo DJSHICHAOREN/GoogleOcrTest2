@@ -31,6 +31,7 @@ public class TranslationShowView extends FloatContainer {
         super(context);
 
         setBackgroundColor(Color.parseColor("#10000000"));
+        setCanBeMoved(true);
 
         mRecyclerView = new RecyclerView(context);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));

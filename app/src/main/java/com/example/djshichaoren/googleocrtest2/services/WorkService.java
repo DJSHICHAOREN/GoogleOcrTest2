@@ -51,6 +51,7 @@ public class WorkService extends Service {
     private View mTranslationResultView;
     private InteractionShowView mInteractionShowView;
     private TranslationShowView mTranslationShowView;
+    private Translator mTranslator = new JinshanTranslator();
     @Override
     public void onCreate() {
         super.onCreate();
@@ -229,8 +230,8 @@ public class WorkService extends Service {
                     String[] wordList = WordFilter.filter(recognitionResult.mContent);
 
                     for(String word : wordList){
-                        Translator translator = new JinshanTranslator();
-                        translator.translate(word, new Translator.TranslateCallback() {
+
+                        mTranslator.translate(word, new Translator.TranslateCallback() {
                             @Override
                             public void success(TranslateResult translateResult) {
                                 mTranslationShowView.addTranslateResult(translateResult);

@@ -24,6 +24,9 @@ public class FloatContainer extends FrameLayout {
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWindowManagerParams;
 
+    private boolean mCanBeMove = true;
+
+
 
     public FloatContainer(@NonNull Context context) {
         super(context);
@@ -73,6 +76,7 @@ public class FloatContainer extends FrameLayout {
     private float twoFigureDistanceY;
 
 
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         super.onTouchEvent(event);
@@ -88,6 +92,10 @@ public class FloatContainer extends FrameLayout {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if(!isTwoFigureTouch){
+                        if(!mCanBeMove){
+                            return false;
+                        }
+
                         // 单指操作滑动控件
                         final float xDistance = event.getRawX() - downX;
                         final float yDistance = event.getRawY() - downY;
@@ -125,7 +133,7 @@ public class FloatContainer extends FrameLayout {
 
                         mWindowManagerParams.x = thisX;
                         mWindowManagerParams.y = thisY;
-                        mWindowManagerParams.width = thisWidth;
+//                        mWindowManagerParams.width = thisWidth;
                         mWindowManagerParams.height = thisHeight;
 
 //                        Log.d("lwd", "scale:" + scale + " thisWidth:" + thisWidth + " thisHeight:" + thisHeight);
@@ -225,5 +233,13 @@ public class FloatContainer extends FrameLayout {
             return new BoundingBox(mWindowManagerParams.x, mWindowManagerParams.y, mWindowManagerParams.width, mWindowManagerParams.height);
         }
         return new BoundingBox();
+    }
+
+    /**
+     * 设置是否可以移动此控件
+     * @param canBeMove
+     */
+    public void setCanBeMoved(boolean canBeMove){
+        mCanBeMove = canBeMove;
     }
 }
