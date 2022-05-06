@@ -3,34 +3,28 @@ package com.example.djshichaoren.googleocrtest2.services;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
 import android.view.WindowManager;
 
 import com.example.djshichaoren.googleocrtest2.core.view.show_view.InteractionShowView;
 import com.example.djshichaoren.googleocrtest2.core.view.show_view.TranslationShowView;
-import com.example.djshichaoren.googleocrtest2.core.word.record.WordFilter;
+import com.example.djshichaoren.googleocrtest2.core.word.record.SentenceDecomposer;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
-import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
-import com.example.djshichaoren.googleocrtest2.ui.element.TranslationResultFactory;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
-import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
-import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -49,6 +43,7 @@ public class WorkService extends Service {
     private InteractionShowView mInteractionShowView;
     private TranslationShowView mTranslationShowView;
     private Translator mTranslator = new JinshanTranslator();
+    private SentenceDecomposer mSentenceDecomposer;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -65,6 +60,7 @@ public class WorkService extends Service {
 
         Log.w("lwd", "Create translation service");
         mGoogleOcrImpl = GoogleOcrImpl.newInstance(getApplicationContext());
+        mSentenceDecomposer = new SentenceDecomposer(getApplicationContext());
 
     }
 
@@ -116,7 +112,7 @@ public class WorkService extends Service {
                 if(recognitionResult != null){
                     mInteractionShowView.updateSentence(recognitionResult.mContent);
 
-                    String[] wordList = WordFilter.filter(recognitionResult.mContent);
+                    List<String> wordList = mSentenceDecomposer.filter(recognitionResult.mContent);
 
                     for(String word : wordList){
 
