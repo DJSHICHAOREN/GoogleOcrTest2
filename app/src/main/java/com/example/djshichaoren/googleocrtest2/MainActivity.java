@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_show_screen_shot_button;
     Button btn_show_screen_shot_image;
     Button btn_start_recognize_screen_service;
+    Button btn_subtitle;
 
     private RequestPermissionResult mRequestMediaProjectionResult;
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         btn_show_screen_shot_button = findViewById(R.id.btn_show_screen_shot_button);
         btn_show_screen_shot_image = findViewById(R.id.btn_show_screen_shot_image);
         btn_start_recognize_screen_service = findViewById(R.id.btn_start_recognize_screen_service);
+        btn_subtitle = findViewById(R.id.btn_subtitle);
 
         // 去掉state bar
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -138,6 +140,14 @@ public class MainActivity extends AppCompatActivity {
                 requestOverlayPermission();
 
                 startRecognizeService();
+            }
+        });
+
+        btn_subtitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, SubtitleActivity.class);
+                startActivity(intent);
             }
         });
 

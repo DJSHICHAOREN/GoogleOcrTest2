@@ -50,6 +50,12 @@
             app:outlineColor="#0000ff"
             app:outlineWidth="9px" />
 
+        <Button
+            android:id="@+id/btn_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="字幕阅读"/>
+
     </LinearLayout>
 
     <ImageView

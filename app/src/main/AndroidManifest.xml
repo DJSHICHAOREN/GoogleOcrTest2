@@ -35,6 +35,9 @@
             <!--</intent-filter>-->
         </activity>
 
+        <activity android:name=".SubtitleActivity">
+        </activity>
+
         <service
             android:name=".services.WorkService"
             android:enabled="true"></service>

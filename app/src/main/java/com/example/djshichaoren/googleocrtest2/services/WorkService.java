@@ -115,10 +115,11 @@ public class WorkService extends Service {
                     List<String> wordList = mSentenceDecomposer.filter(recognitionResult.mContent);
 
                     for(String word : wordList){
-
+                        Log.d("lwd", "start require word:" + word);
                         mTranslator.translate(word, new Translator.TranslateCallback() {
                             @Override
                             public void success(TranslateResult translateResult) {
+                                Log.d("lwd", "get word:" + word);
                                 mTranslationShowView.addTranslateResult(translateResult);
                             }
                         });

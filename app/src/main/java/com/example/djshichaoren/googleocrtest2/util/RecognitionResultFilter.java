@@ -28,7 +28,7 @@ public class RecognitionResultFilter {
      */
     public static RecognitionResult filter(List<RecognitionResult> recognitionResultList){
         // 若没有识别结果，则返回null
-        if(recognitionResultList.size() < 1){
+        if(recognitionResultList == null || recognitionResultList.size() < 1){
             return null;
         }
         // 选出文字出现的位置最低的
