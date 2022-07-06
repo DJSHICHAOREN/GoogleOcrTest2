@@ -3,6 +3,8 @@ package com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.common.TimedLine;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.common.TimedTextFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,6 +18,7 @@ public class SRTSub implements TimedTextFile {
 
 	private String fileName;
 	private Set<SRTLine> lines = new TreeSet<>();
+	private List<SRTLine> lineList;
 
 	// ======================== Public methods ==========================
 
@@ -62,6 +65,23 @@ public class SRTSub implements TimedTextFile {
 	@Override
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public int getLength(){
+		if(lineList == null){
+			lineList = new ArrayList<>(lines);
+		}
+
+		return lineList.size();
+	}
+
+	public SRTLine getSrtLine(int position){
+
+		if(lineList == null){
+			lineList = new ArrayList<>(lines);
+		}
+
+		return lineList.get(position);
 	}
 
 }

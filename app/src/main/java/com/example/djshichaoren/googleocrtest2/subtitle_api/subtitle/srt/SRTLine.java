@@ -43,4 +43,27 @@ public class SRTLine extends SubtitleLine<SRTTime> {
     public void setId(int id) {
         this.id = id;
     }
+
+    public String getChineseString(){
+        // todo:判断哪一行是中文
+        if(textLines != null && textLines.size() > 0){
+            return textLines.get(0);
+        }
+        return null;
+    }
+
+    public String getEnglishString(){
+        if(textLines != null && textLines.size() > 1){
+            return textLines.get(1);
+        }
+        return null;
+    }
+
+    public String getTimeString(){
+        if(time != null){
+            return time.toString();
+        }
+        return "";
+    }
+
 }

@@ -15,6 +15,7 @@ public class JinshanTranslation extends BaseBean {
 
     private List<Symbol> symbols;
 
+
     public List<Symbol> getSymbols() {
         return symbols;
     }
@@ -39,73 +40,73 @@ public class JinshanTranslation extends BaseBean {
         this.word_name = word_name;
     }
 
-    public class Exchange{
-        public List<String> word_pl;
-        public String word_third;
-        public String word_past;
-        public String word_done;
-        public String word_ing;
-        public String word_er;
-        public String word_est;
-
-        public List<String> getWord_pl() {
-            return word_pl;
-        }
-
-        public void setWord_pl(List<String> word_pl) {
-            this.word_pl = word_pl;
-        }
-
-        public String getWord_past() {
-            return word_past;
-        }
-
-        public void setWord_past(String word_past) {
-            this.word_past = word_past;
-        }
-
-        public String getWord_done() {
-            return word_done;
-        }
-
-        public void setWord_done(String word_done) {
-            this.word_done = word_done;
-        }
-
-        public String getWord_ing() {
-            return word_ing;
-        }
-
-        public void setWord_ing(String word_ing) {
-            this.word_ing = word_ing;
-        }
-
-        public String getWord_er() {
-            return word_er;
-        }
-
-        public void setWord_er(String word_er) {
-            this.word_er = word_er;
-        }
-
-        public String getWord_est() {
-            return word_est;
-        }
-
-        public void setWord_est(String word_est) {
-            this.word_est = word_est;
-        }
-
-
-
-        public String getWord_third() {
-            return word_third;
-        }
-
-        public void setWord_third(String word_third) {
-            this.word_third = word_third;
-        }
-    }
+//    public class Exchange{
+//        public String word_pl;
+//        public String word_third;
+//        public String word_past;
+//        public String word_done;
+//        public String word_ing;
+//        public String word_er;
+//        public String word_est;
+//
+//        public String getWord_pl() {
+//            return word_pl;
+//        }
+//
+//        public void setWord_pl(String word_pl) {
+//            this.word_pl = word_pl;
+//        }
+//
+//        public String getWord_past() {
+//            return word_past;
+//        }
+//
+//        public void setWord_past(String word_past) {
+//            this.word_past = word_past;
+//        }
+//
+//        public String getWord_done() {
+//            return word_done;
+//        }
+//
+//        public void setWord_done(String word_done) {
+//            this.word_done = word_done;
+//        }
+//
+//        public String getWord_ing() {
+//            return word_ing;
+//        }
+//
+//        public void setWord_ing(String word_ing) {
+//            this.word_ing = word_ing;
+//        }
+//
+//        public String getWord_er() {
+//            return word_er;
+//        }
+//
+//        public void setWord_er(String word_er) {
+//            this.word_er = word_er;
+//        }
+//
+//        public String getWord_est() {
+//            return word_est;
+//        }
+//
+//        public void setWord_est(String word_est) {
+//            this.word_est = word_est;
+//        }
+//
+//
+//
+//        public String getWord_third() {
+//            return word_third;
+//        }
+//
+//        public void setWord_third(String word_third) {
+//            this.word_third = word_third;
+//        }
+//    }
 
     public class Symbol{
         public String ph_en;

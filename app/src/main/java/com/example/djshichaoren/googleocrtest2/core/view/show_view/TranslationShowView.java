@@ -2,7 +2,6 @@ package com.example.djshichaoren.googleocrtest2.core.view.show_view;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -49,7 +48,7 @@ public class TranslationShowView extends FloatContainer {
 
 
     public void addTranslateResult(TranslateResult translateResult){
-        if(translateResult == null || translateResult.mTranslationList.size() == 0){
+        if(translateResult == null || translateResult.short_translation == null || translateResult.short_translation == ""){
             return;
         }
 

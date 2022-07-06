@@ -7,7 +7,6 @@ import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class TranslationContentVH extends BaseVH {
     private TextView otv_word;
@@ -24,14 +23,9 @@ public class TranslationContentVH extends BaseVH {
     public void bind(TranslateResult translateResult) {
         if(translateResult == null) return;
 
-        otv_word.setText(translateResult.mWord);
+        otv_word.setText(translateResult.getWord_name());
 
-        if(translateResult.mTranslationList != null && translateResult.mTranslationList.size() > 0){
-            otv_translation.setText(translateResult.mTranslationList.get(0));
-        }
-        else{
-            otv_translation.setText("");
-        }
+        otv_translation.setText(translateResult.short_translation);
 
     }
 
