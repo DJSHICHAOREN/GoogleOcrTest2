@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
+import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
+import com.example.djshichaoren.googleocrtest2.database.entity.NewWordEntity;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTLine;
 import com.example.djshichaoren.googleocrtest2.ui.view.TranslationResultView;
@@ -69,6 +72,8 @@ public class SubtitleItemVH extends BaseVH {
             }
         });
 
+        translation_result_view.clearAllViews();
+
         ll_whole.post(new Runnable() {
             @Override
             public void run() {
@@ -88,17 +93,50 @@ public class SubtitleItemVH extends BaseVH {
                         wordView.setTextSize(20);
                         wordView.setPadding(0, 0, mWordPaddingRight, 0);
                         wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                        wordView.setTag(0);
                         wordView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                String cleanedWord = StringCleaner.cleanWordString(word);
-                                mTranslator.translate(cleanedWord, new Translator.TranslateCallback() {
-                                    @Override
-                                    public void success(TranslateResult translateResult) {
-                                        Log.d("lwd", "get word:" + word);
-                                        translation_result_view.setData(translateResult);
+
+                                NewWordEntity subtitleEntity = SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
+                                if(subtitleEntity == null){
+                                    subtitleEntity = SubtitleDatabaseUtil.insertNewWordEntity(v.getContext(), word);
+                                }
+
+                                if((int)(wordView.getTag()) == 0) {
+                                    String cleanedWord = StringCleaner.cleanWordString(word);
+
+                                    if(!translation_result_view.getCurrentTranslationWordName().equals(cleanedWord)){
+                                        mTranslator.translate(cleanedWord, new Translator.TranslateCallback() {
+                                            @Override
+                                            public void success(TranslateResult translateResult) {
+                                                Log.d("lwd", "get word:" + word);
+                                                translation_result_view.setData(translateResult);
+                                            }
+                                        });
                                     }
-                                });
+
+                                    wordView.setTag(1);
+                                    wordView.setTextColor(SELECTED_TEXT_COLOR);
+                                    translation_result_view.setVisibility(View.VISIBLE);
+
+                                    if(subtitleEntity.isNew == false){
+                                        subtitleEntity.isNew = true;
+                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), subtitleEntity);
+                                    }
+                                }
+                                else{
+                                    wordView.setTag(0);
+                                    wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                                    translation_result_view.setVisibility(View.GONE);
+                                    SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
+
+                                    if(subtitleEntity.isNew == true){
+                                        subtitleEntity.isNew = false;
+                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), subtitleEntity);
+                                    }
+                                }
+
                             }
                         });
 

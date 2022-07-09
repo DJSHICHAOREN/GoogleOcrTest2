@@ -2,7 +2,6 @@ package com.example.djshichaoren.googleocrtest2.ui.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ public class TranslationResultView extends LinearLayout {
     private LinearLayout ll_whole;
     private int mFreeWidth;
     private static final int WORD_PADDING_LEFT  = 20;
+    private TranslateResult mTranslateResult;
 
     public TranslationResultView(Context context) {
         super(context);
@@ -46,6 +46,8 @@ public class TranslationResultView extends LinearLayout {
     }
 
     public void setData(TranslateResult translateResult){
+        mTranslateResult = translateResult;
+
         ll_whole.removeAllViews();
 
         if(translateResult == null
@@ -95,7 +97,7 @@ public class TranslationResultView extends LinearLayout {
             public void run() {
 
                 for(JinshanTranslation.Symbol.Part part : symbol.getParts()){
-                    LinearLayout partLinearLayout = createLinearLayout();
+                    LinearLayout partLinearLayout = createAndAddTranslationLayout();
 
                     TextView tvPart = new TextView(getContext());
                     tvPart.setText(part.getPart());
@@ -107,10 +109,9 @@ public class TranslationResultView extends LinearLayout {
                         TextView tvMean = new TextView(getContext());
                         tvMean.setText(mean);
                         tvMean.setPadding(WORD_PADDING_LEFT, 0, 0, 0);
-                        Log.d("lwd", mean + ":" + tvMean.getPaint().measureText(mean));
 
                         if(mFreeWidth < tvMean.getPaint().measureText(mean)){
-                            partLinearLayout = createLinearLayout();
+                            partLinearLayout = createAndAddTranslationLayout();
                         }
 
                         partLinearLayout.addView(tvMean);
@@ -125,7 +126,7 @@ public class TranslationResultView extends LinearLayout {
 
     }
 
-    private LinearLayout createLinearLayout(){
+    private LinearLayout createAndAddTranslationLayout(){
         LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.setOrientation(HORIZONTAL);
         ll_whole.addView(linearLayout
@@ -133,5 +134,14 @@ public class TranslationResultView extends LinearLayout {
         mFreeWidth = ll_whole.getWidth();
 
         return linearLayout;
+    }
+
+    public void clearAllViews(){
+        ll_whole.removeAllViews();
+    }
+
+    public String getCurrentTranslationWordName(){
+        if(mTranslateResult == null) return "";
+        return mTranslateResult.getWord_name();
     }
 }

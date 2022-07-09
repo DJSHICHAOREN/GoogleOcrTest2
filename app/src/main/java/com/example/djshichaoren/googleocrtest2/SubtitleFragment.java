@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
+import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabase;
+import com.example.djshichaoren.googleocrtest2.database.dao.SubtitleDao;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.ASSParser;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.ParserFactory;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
@@ -58,6 +61,9 @@ public class SubtitleFragment extends Fragment {
         InputStream inputStream = getContext().getResources().openRawResource(R.raw.subtitle);
         SRTSub subtitle = parser.parse(inputStream, "subtitle.srt", null);
 
+        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(getContext());
+        SubtitleDao subtitleDao = subtitleDatabase.getSubtitleDao();
+        long id = subtitleDao.insertSubtitle(new SubtitleEntity("subtitle.srt"));
 
 //        tv_content.setText(subtitle.toString());
 
