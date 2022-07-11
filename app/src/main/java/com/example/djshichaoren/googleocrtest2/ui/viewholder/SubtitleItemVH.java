@@ -40,6 +40,7 @@ public class SubtitleItemVH extends BaseVH {
 
     private Translator mTranslator;
     private SubtitleEntity mSubtitleEntity;
+    private TextView mLastSelectedWordTextView;
 
     public SubtitleItemVH(@NonNull View itemView, Translator translator, SubtitleEntity subtitleEntity) {
         super(itemView);
@@ -102,6 +103,7 @@ public class SubtitleItemVH extends BaseVH {
                             @Override
                             public void onClick(View v) {
 
+                                // 得到字幕句子字段
                                 SubtitleSentenceEntity subtitleSentenceEntity = SubtitleDatabaseUtil.getSubtitleSentenceEntity(v.getContext(), mSubtitleEntity.id, srtLine.getId());
                                 if(subtitleSentenceEntity == null){
                                     subtitleSentenceEntity = SubtitleDatabaseUtil.insertSubtitleSentenceEntity(v.getContext(), mSubtitleEntity.id, srtLine.getId()
@@ -109,11 +111,14 @@ public class SubtitleItemVH extends BaseVH {
                                 }
                                 final int subtitleSentenceId = subtitleSentenceEntity.id;
 
-                                NewWordEntity newwordEntity = SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
-                                if(newwordEntity == null){
-                                    newwordEntity = SubtitleDatabaseUtil.insertNewWordEntity(v.getContext(), word);
+                                // 得到单词字段
+                                NewWordEntity newWordEntity = SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
+                                if(newWordEntity == null){
+                                    newWordEntity = SubtitleDatabaseUtil.insertNewWordEntity(v.getContext(), word);
                                 }
+                                final int newWordId = newWordEntity.id;
 
+                                // 选中生词
                                 if((int)(wordView.getTag()) == 0) {
                                     String cleanedWord = StringCleaner.cleanWordString(word);
 
@@ -122,7 +127,7 @@ public class SubtitleItemVH extends BaseVH {
                                             @Override
                                             public void success(TranslateResult translateResult) {
                                                 Log.d("lwd", "get word:" + word);
-                                                translation_result_view.setData(translateResult, subtitleSentenceId);
+                                                translation_result_view.setData(translateResult, subtitleSentenceId, newWordId);
                                             }
                                         });
                                     }
@@ -131,21 +136,31 @@ public class SubtitleItemVH extends BaseVH {
                                     wordView.setTextColor(SELECTED_TEXT_COLOR);
                                     translation_result_view.setVisibility(View.VISIBLE);
 
-                                    if(newwordEntity.isNew == false){
-                                        newwordEntity.isNew = true;
-                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newwordEntity);
+                                    if(newWordEntity.isNew == false){
+                                        newWordEntity.isNew = true;
+                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newWordEntity);
                                     }
+
+                                    // 取消选中之前选中的单词
+                                    if(mLastSelectedWordTextView != wordView && mLastSelectedWordTextView != null){
+                                        mLastSelectedWordTextView.setTag(0);
+                                        mLastSelectedWordTextView.setTextColor(UNSELECTED_TEXT_COLOR);
+                                    }
+                                    mLastSelectedWordTextView = wordView;
                                 }
                                 else{
+                                    // 取消选中生词
                                     wordView.setTag(0);
                                     wordView.setTextColor(UNSELECTED_TEXT_COLOR);
                                     translation_result_view.setVisibility(View.GONE);
                                     SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
 
-                                    if(newwordEntity.isNew == true){
-                                        newwordEntity.isNew = false;
-                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newwordEntity);
+                                    if(newWordEntity.isNew == true){
+                                        newWordEntity.isNew = false;
+                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newWordEntity);
                                     }
+
+                                    mLastSelectedWordTextView = null;
                                 }
 
                             }

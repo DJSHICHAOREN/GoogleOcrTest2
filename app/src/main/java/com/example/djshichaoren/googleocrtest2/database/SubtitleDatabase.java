@@ -21,7 +21,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
         entities = {SubtitleEntity.class, NewWordEntity.class, WordSceneEntity.class, SubtitleSentenceEntity.class},
-        version = 6,
+        version = 7,
         exportSchema = false
 )
 public abstract class SubtitleDatabase extends RoomDatabase {
