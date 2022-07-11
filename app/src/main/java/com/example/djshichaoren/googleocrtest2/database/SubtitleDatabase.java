@@ -5,8 +5,11 @@ import android.content.Context;
 
 import com.example.djshichaoren.googleocrtest2.database.dao.NewWordDao;
 import com.example.djshichaoren.googleocrtest2.database.dao.SubtitleDao;
+import com.example.djshichaoren.googleocrtest2.database.dao.SubtitleSentenceDao;
+import com.example.djshichaoren.googleocrtest2.database.dao.WordSceneDao;
 import com.example.djshichaoren.googleocrtest2.database.entity.NewWordEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleSentenceEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 
 import androidx.annotation.NonNull;
@@ -17,8 +20,8 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
-        entities = {SubtitleEntity.class, NewWordEntity.class, WordSceneEntity.class},
-        version = 5,
+        entities = {SubtitleEntity.class, NewWordEntity.class, WordSceneEntity.class, SubtitleSentenceEntity.class},
+        version = 6,
         exportSchema = false
 )
 public abstract class SubtitleDatabase extends RoomDatabase {
@@ -52,4 +55,8 @@ public abstract class SubtitleDatabase extends RoomDatabase {
     public abstract SubtitleDao getSubtitleDao();
 
     public abstract NewWordDao getNewWordDao();
+
+    public abstract SubtitleSentenceDao getSubtitleSentenceDao();
+
+    public abstract WordSceneDao getWordSceneDao();
 }

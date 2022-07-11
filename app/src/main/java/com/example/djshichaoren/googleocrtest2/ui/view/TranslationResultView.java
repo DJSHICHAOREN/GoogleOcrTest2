@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleSentenceEntity;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 
@@ -45,7 +46,7 @@ public class TranslationResultView extends LinearLayout {
         ll_whole = root.findViewById(R.id.ll_whole);
     }
 
-    public void setData(TranslateResult translateResult){
+    public void setData(TranslateResult translateResult, int subtitleSentenceId){
         mTranslateResult = translateResult;
 
         ll_whole.removeAllViews();

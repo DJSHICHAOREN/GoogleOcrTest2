@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabase;
+import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.dao.SubtitleDao;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.ASSParser;
@@ -63,12 +64,19 @@ public class SubtitleFragment extends Fragment {
 
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(getContext());
         SubtitleDao subtitleDao = subtitleDatabase.getSubtitleDao();
-        long id = subtitleDao.insertSubtitle(new SubtitleEntity("subtitle.srt"));
 
+        String subtitleName = "subtitle.srt";
+
+        SubtitleEntity subtitleEntity = SubtitleDatabaseUtil.getSubtitleEntity(getContext(), subtitleName);
+        if(subtitleEntity == null){
+            subtitleEntity = SubtitleDatabaseUtil.insertSubtitleEntity(getContext(), subtitleName);
+        }
+
+//        long id = subtitleDao.insertSubtitle(new SubtitleEntity(subtitleName));
 //        tv_content.setText(subtitle.toString());
 
         rc_subtitle.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator);
+        mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
         rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
         rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override

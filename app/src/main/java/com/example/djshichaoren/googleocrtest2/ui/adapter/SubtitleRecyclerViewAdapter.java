@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 import com.example.djshichaoren.googleocrtest2.ui.viewholder.BaseVH;
 import com.example.djshichaoren.googleocrtest2.ui.viewholder.SubtitleItemVH;
@@ -18,11 +19,13 @@ public class SubtitleRecyclerViewAdapter extends RecyclerView.Adapter<BaseVH> {
     private SRTSub mSubtitle;
     private Context mContext;
     private Translator mTranslator;
+    private SubtitleEntity mSubtitleEntity;
 
-    public SubtitleRecyclerViewAdapter(Context context, SRTSub subtitle, Translator translator){
+    public SubtitleRecyclerViewAdapter(Context context, SRTSub subtitle, Translator translator, SubtitleEntity subtitleEntity){
         mSubtitle = subtitle;
         mContext = context;
         mTranslator = translator;
+        mSubtitleEntity = subtitleEntity;
     }
 
     @NonNull
@@ -30,7 +33,7 @@ public class SubtitleRecyclerViewAdapter extends RecyclerView.Adapter<BaseVH> {
     public BaseVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
 
-        return new SubtitleItemVH(LayoutInflater.from(mContext).inflate(R.layout.layout_subtitle_item_vh, parent, false), mTranslator);
+        return new SubtitleItemVH(LayoutInflater.from(mContext).inflate(R.layout.layout_subtitle_item_vh, parent, false), mTranslator, mSubtitleEntity);
     }
 
     @Override
