@@ -185,7 +185,7 @@ public class TranslationResultView extends LinearLayout {
     }
 
     public String getCurrentTranslationWordName(){
-        if(mTranslateResult == null) return "";
+        if(mTranslateResult == null || mTranslateResult.getWord_name() == null) return "";
         return mTranslateResult.getWord_name();
     }
 }

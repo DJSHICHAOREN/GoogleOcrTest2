@@ -1,26 +1,22 @@
 package com.example.djshichaoren.googleocrtest2;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabase;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.dao.SubtitleDao;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.ASSParser;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.ParserFactory;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SubtitleParser;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.ass.ASSSub;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.common.TimedTextFile;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
-import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 
 import java.io.InputStream;
 
@@ -38,6 +34,8 @@ public class SubtitleFragment extends Fragment {
     private RecyclerView rc_subtitle;
     private SubtitleRecyclerViewAdapter mSubtitleRecyclerViewAdapter;
     private Translator mTranslator = new JinshanTranslator();
+    private LinearLayoutManager mLinearLayoutManager;
+
 
     @Nullable
     @Override
@@ -75,7 +73,8 @@ public class SubtitleFragment extends Fragment {
 //        long id = subtitleDao.insertSubtitle(new SubtitleEntity(subtitleName));
 //        tv_content.setText(subtitle.toString());
 
-        rc_subtitle.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        rc_subtitle.setLayoutManager(mLinearLayoutManager);
         mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
         rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
         rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -86,10 +85,28 @@ public class SubtitleFragment extends Fragment {
             }
         });
 
-
         return root;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        SharedPreferences sp = getContext().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        int firstVisiblePosition = sp.getInt(Constants.SP_SUBTITLE_SCROLL_DEPTH_KEY, 0);
+        rc_subtitle.scrollToPosition(firstVisiblePosition);
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SharedPreferences.Editor editor = getContext().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).edit();
+        editor.putInt(Constants.SP_SUBTITLE_SCROLL_DEPTH_KEY, mLinearLayoutManager.findFirstVisibleItemPosition());
+        editor.apply();
+    }
 
     public static SubtitleFragment newInstance(){
         return new SubtitleFragment();
