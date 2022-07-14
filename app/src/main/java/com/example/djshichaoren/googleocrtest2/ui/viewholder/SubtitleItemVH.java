@@ -1,6 +1,7 @@
 package com.example.djshichaoren.googleocrtest2.ui.viewholder;
 
 import android.graphics.Color;
+import android.os.Handler;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTLine
 import com.example.djshichaoren.googleocrtest2.ui.view.TranslationResultView;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 import com.google.android.gms.vision.text.Line;
+
 
 import androidx.annotation.NonNull;
 
@@ -41,6 +43,7 @@ public class SubtitleItemVH extends BaseVH {
     private Translator mTranslator;
     private SubtitleEntity mSubtitleEntity;
     private TextView mLastSelectedWordTextView;
+    private Handler mHandler = new Handler();
 
     public SubtitleItemVH(@NonNull View itemView, Translator translator, SubtitleEntity subtitleEntity) {
         super(itemView);
@@ -127,7 +130,12 @@ public class SubtitleItemVH extends BaseVH {
                                             @Override
                                             public void success(TranslateResult translateResult) {
                                                 Log.d("lwd", "get word:" + word);
-                                                translation_result_view.setData(translateResult, subtitleSentenceId, newWordId);
+                                                mHandler.post(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        translation_result_view.setData(translateResult, subtitleSentenceId, newWordId);
+                                                    }
+                                                });
                                             }
                                         });
                                     }
