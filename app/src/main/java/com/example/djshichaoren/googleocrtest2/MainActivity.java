@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.djshichaoren.googleocrtest2.permission.FloatPermissionManager;
+import com.example.djshichaoren.googleocrtest2.permission.UphoneCallback;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.test.GoogleOcrTester;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
         // 请求权限
-        requestMediaProjectPermission();
+//        requestMediaProjectPermission();
 
 //        requestOverlayPermission();
 
@@ -136,10 +138,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // 获取截屏权限
-                requestMediaProjectPermission();
-                requestOverlayPermission();
+//                requestMediaProjectPermission();
+//                requestOverlayPermission();
 
-                startRecognizeService();
+                boolean hasPermission = FloatPermissionManager.getInstance().applyFloatWindow(MainActivity.this, new UphoneCallback() {
+                    @Override
+                    public void invoke(boolean granted, String msg) {
+                        if (granted) {
+                            startRecognizeService();
+                        }
+                    }
+
+                });
+                if(hasPermission){
+                    startRecognizeService();
+                }
+
             }
         });
 
