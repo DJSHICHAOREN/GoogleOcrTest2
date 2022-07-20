@@ -1,6 +1,9 @@
 package com.example.djshichaoren.googleocrtest2;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -18,9 +21,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
+import com.example.djshichaoren.googleocrtest2.ui.fragment.ShelterFragment;
+import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleFragment;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabSelectListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RealMainActivity extends AppCompatActivity {
 
@@ -29,9 +39,16 @@ public class RealMainActivity extends AppCompatActivity {
     private WorkService mWorkService;
     private boolean mBound = false;
     private static final String TAG = "lwd";
-    private static final int GET_SCREENSHOT_REQUEST_CODE = 0;
-    private static final int DRAW_OVERLAY_REQUEST_CODE = 1;
-    private Button btn_start;
+
+    private static final int REQUEST_DRAW_OVERLAY = 0;
+    private static final int REQUEST_MEDIA_PROJECTION_PERMISSION = 3;
+
+    private RequestPermissionResult mRequestMediaProjectionResult;
+    private RequestPermissionResult mRequestDrawOverlaynResult;
+
+    private List<Fragment> mFragmentList = new ArrayList<>();
+    private Fragment mCurrentFragment;
+    private BottomBar mBottomBar;
 
 
     @Override
@@ -54,55 +71,90 @@ public class RealMainActivity extends AppCompatActivity {
         oritationChangeCallback.enable();
         ScreenLocationCalculator.setWindowsManager(getWindowManager());
 
+
         // 获取控件
-        btn_start = findViewById(R.id.btn_start);
+        mBottomBar = findViewById(R.id.bottom_bar);
+
+        createFragment();
+        changeFragment(0);
+
+        mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelected(int tabId) {
+                changeFragment(tabId);
+            }
+        });
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == DRAW_OVERLAY_REQUEST_CODE) {
+        if (requestCode == REQUEST_DRAW_OVERLAY) {
+            if (!canDrawOverlay()) {
+                Toast.makeText(this, "当前无悬浮窗权限，软件无法运行", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(this, "已获取悬浮窗权限，点击开始学习", Toast.LENGTH_SHORT).show();
+
+                if(mRequestDrawOverlaynResult != null){
+                    mRequestDrawOverlaynResult.successCallback(resultCode, data);
+                }
+            }
+            return;
+        }
+
+        if (requestCode == REQUEST_MEDIA_PROJECTION_PERMISSION) {
             if (resultCode != Activity.RESULT_OK) {
-                Toast.makeText(this, R.string.user_screen_overlay, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.user_canceled_screen_shot, Toast.LENGTH_SHORT).show();
                 return;
             }
-            else{
-                // 申请截屏权限
-                startActivityForResult(
-                        mMediaProjectionManager.createScreenCaptureIntent(),
-                        GET_SCREENSHOT_REQUEST_CODE);
+            if(mRequestMediaProjectionResult != null){
+                mRequestMediaProjectionResult.successCallback(resultCode, data);
             }
-        }
-        else if(requestCode == GET_SCREENSHOT_REQUEST_CODE){
-            if(resultCode != Activity.RESULT_OK){
-                Toast.makeText(this, R.string.user_canceled_screen_shot, Toast.LENGTH_SHORT).show();
-            }
-            else{
-                recognizeScreen(resultCode, data);
-            }
-
         }
     }
 
-    public void btnStartRecognition(View view){
-        // 允许在其他应用上层显示
-        if (!Settings.canDrawOverlays(this)) {
-            Toast.makeText(this, "请授权在其他应用上层显示", Toast.LENGTH_LONG);
-            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName())), DRAW_OVERLAY_REQUEST_CODE);
-        } else {
-            // 申请截屏权限
-            startActivityForResult(
-                    mMediaProjectionManager.createScreenCaptureIntent(),
-                    GET_SCREENSHOT_REQUEST_CODE);
+    public void createFragment(){
+        ShelterFragment shelterFragment = ShelterFragment.newInstance();
+        mFragmentList.add(shelterFragment);
+
+        SubtitleFragment subtitleFragment = SubtitleFragment.newInstance();
+        mFragmentList.add(subtitleFragment);
+    }
+
+    private void changeFragment(int position) {
+        if (isFinishing()) {
+            return;
+        }
+        if(position >= mFragmentList.size()) return;
+
+        Fragment fragment = mFragmentList.get(position);
+        if (fragment != mCurrentFragment) {
+            FragmentManager supportFragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
+            if (fragment.isAdded()) {
+                fragmentTransaction.show(fragment).hide(mCurrentFragment);
+            } else {
+                fragmentTransaction.add(R.id.fl_container, fragment);
+                if (mCurrentFragment != null) {
+                    fragmentTransaction.hide(mCurrentFragment);
+                }
+            }
+            fragmentTransaction.commitAllowingStateLoss();
+            mCurrentFragment = fragment;
         }
     }
 
-    private void recognizeScreen(int resultCode, Intent data){
-        MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
-        mScreenShotter.setMediaProjection(mediaProjection);
+    public void startRecognitionWithPermission(){
+        // 获取截屏权限
+        requestMediaProjectPermission();
+        requestOverlayPermission();
+
+//        startRecognizeService();
+    }
+
+    // 开启截屏服务
+    public void startRecognizeService(){
         mWorkService.startAll();
-
-        btn_start.setText("停止识别");
     }
 
     @Override
@@ -122,6 +174,43 @@ public class RealMainActivity extends AppCompatActivity {
         }
     }
 
+    // 请求屏幕截图权限
+    private void requestMediaProjectPermission(){
+
+        if(!mScreenShotter.isSupportScreenShot()){
+            startActivityForResult(
+                    mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION_PERMISSION);
+
+            mRequestMediaProjectionResult = new RequestPermissionResult() {
+                @Override
+                public void successCallback(int resultCode, Intent data) {
+                    MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+                    mScreenShotter.setMediaProjection(mediaProjection);
+                }
+            };
+        }
+
+    }
+
+    // 请求显示在屏幕权限
+    private void requestOverlayPermission(){
+        if(!canDrawOverlay()){
+            startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName())), REQUEST_DRAW_OVERLAY);
+
+            mRequestDrawOverlaynResult = new RequestPermissionResult() {
+                @Override
+                public void successCallback(int resultCode, Intent data) {
+
+                }
+            };
+        }
+    }
+
+    // 是否有显示在屏幕权限
+    private boolean canDrawOverlay(){
+        return Settings.canDrawOverlays(this);
+    }
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -135,4 +224,8 @@ public class RealMainActivity extends AppCompatActivity {
             mBound = false;
         }
     };
+
+    interface RequestPermissionResult{
+        void successCallback(int resultCode, Intent data);
+    }
 }

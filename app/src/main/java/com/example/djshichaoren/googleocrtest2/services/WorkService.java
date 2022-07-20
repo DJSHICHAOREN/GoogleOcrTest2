@@ -88,9 +88,9 @@ public class WorkService extends Service {
             createInteractionShowView();
         }
 
-        if(mTranslationShowView == null){
-            createTranslationShowView();
-        }
+//        if(mTranslationShowView == null){
+//            createTranslationShowView();
+//        }
 
         final Handler mRecognizeHandler = new Handler();
         mRecognizeHandler.postDelayed(new Runnable() {
@@ -112,20 +112,20 @@ public class WorkService extends Service {
                 if(recognitionResult != null){
                     mInteractionShowView.updateSentence(recognitionResult.mContent);
 
-                    List<String> wordList = mSentenceDecomposer.filter(recognitionResult.mContent);
+//                    List<String> wordList = mSentenceDecomposer.filter(recognitionResult.mContent);
+//
+//                    for(String word : wordList){
+//                        Log.d("lwd", "start require word:" + word);
+//                        mTranslator.translate(word, new Translator.TranslateCallback() {
+//                            @Override
+//                            public void success(TranslateResult translateResult) {
+//                                Log.d("lwd", "get word:" + word);
+//                                mTranslationShowView.addTranslateResult(translateResult);
+//                            }
+//                        });
+//                    }
 
-                    for(String word : wordList){
-                        Log.d("lwd", "start require word:" + word);
-                        mTranslator.translate(word, new Translator.TranslateCallback() {
-                            @Override
-                            public void success(TranslateResult translateResult) {
-                                Log.d("lwd", "get word:" + word);
-                                mTranslationShowView.addTranslateResult(translateResult);
-                            }
-                        });
-                    }
-
-                    Log.d("lwd", "content is :" + recognitionResult.mContent);
+//                    Log.d("lwd", "content is :" + recognitionResult.mContent);
                 }
 
                 mRecognizeHandler.postDelayed(this, TIME);

@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleFragment;
+
 public class SubtitleActivity extends AppCompatActivity {
 
     FrameLayout fl_content;

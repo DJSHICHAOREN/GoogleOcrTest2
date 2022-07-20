@@ -1,4 +1,4 @@
-package com.example.djshichaoren.googleocrtest2;
+package com.example.djshichaoren.googleocrtest2.ui.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabase;
