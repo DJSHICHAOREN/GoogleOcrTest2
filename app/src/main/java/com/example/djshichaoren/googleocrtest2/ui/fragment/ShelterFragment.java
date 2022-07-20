@@ -16,9 +16,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.djshichaoren.googleocrtest2.MainActivity;
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.RealMainActivity;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.permission.FloatPermissionManager;
+import com.example.djshichaoren.googleocrtest2.permission.UphoneCallback;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
@@ -56,27 +59,35 @@ public class ShelterFragment extends Fragment {
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 允许在其他应用上层显示
-//                if (!Settings.canDrawOverlays(getContext())) {
-//                    Toast.makeText(getContext(), "请授权在其他应用上层显示", Toast.LENGTH_LONG);
-//                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-//                            Uri.parse("package:" + getContext().getPackageName())), DRAW_OVERLAY_REQUEST_CODE);
-//                } else {
-//                    // 申请截屏权限
-//                    startActivityForResult(
-//                            mMediaProjectionManager.createScreenCaptureIntent(),
-//                            GET_SCREENSHOT_REQUEST_CODE);
-//                }
-
                 if(getActivity() instanceof RealMainActivity){
                     RealMainActivity realMainActivity = (RealMainActivity) getActivity();
                     realMainActivity.startRecognitionWithPermission();
                 }
 
+//                boolean hasPermission = FloatPermissionManager.getInstance().applyFloatWindow(getContext(), new UphoneCallback() {
+//                    @Override
+//                    public void invoke(boolean granted, String msg) {
+//                        if (granted) {
+//                            startLearnVideo();
+//                        }
+//                    }
+//
+//                });
+//                if(hasPermission){
+//                    startLearnVideo();
+//                }
+
             }
         });
 
         return view;
+    }
+
+    public void startLearnVideo(){
+        if(getActivity() instanceof RealMainActivity){
+            RealMainActivity realMainActivity = (RealMainActivity) getActivity();
+            realMainActivity.startRecognizeService();
+        }
     }
 
     public static ShelterFragment newInstance(){

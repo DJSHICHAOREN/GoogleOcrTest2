@@ -59,6 +59,7 @@ public class RealMainActivity extends AppCompatActivity {
         //获取MediaProjectionManager实例
         mMediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         mScreenShotter = ScreenShotter.newInstance();
+        mScreenShotter.setWindowManager(getWindowManager());
 
         // 屏幕旋转监听
         OrientationChangeListener oritationChangeCallback = new OrientationChangeListener(getApplicationContext());
@@ -81,9 +82,22 @@ public class RealMainActivity extends AppCompatActivity {
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(int tabId) {
-                changeFragment(tabId);
+                int index = 0;
+                switch (tabId){
+                    case R.id.tab_shelter:
+                        index = 0;
+                        break;
+                    case R.id.tab_subtitle:
+                        index = 1;
+                        break;
+                }
+
+                changeFragment(index);
             }
         });
+
+        requestMediaProjectPermission();
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -149,7 +163,7 @@ public class RealMainActivity extends AppCompatActivity {
         requestMediaProjectPermission();
         requestOverlayPermission();
 
-//        startRecognizeService();
+        startRecognizeService();
     }
 
     // 开启截屏服务
