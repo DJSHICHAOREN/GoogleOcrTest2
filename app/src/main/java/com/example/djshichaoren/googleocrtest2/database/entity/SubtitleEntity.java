@@ -5,8 +5,10 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class SubtitleEntity {
+public class SubtitleEntity implements Serializable {
 
     @PrimaryKey(autoGenerate = true)
     public int id;
@@ -21,6 +23,22 @@ public class SubtitleEntity {
 
     @Ignore
     public SubtitleEntity(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 }

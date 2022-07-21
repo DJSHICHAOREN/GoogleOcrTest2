@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.ShelterFragment;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleFragment;
+import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleListFragment;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
@@ -131,8 +132,11 @@ public class RealMainActivity extends AppCompatActivity {
         ShelterFragment shelterFragment = ShelterFragment.newInstance();
         mFragmentList.add(shelterFragment);
 
-        SubtitleFragment subtitleFragment = SubtitleFragment.newInstance();
-        mFragmentList.add(subtitleFragment);
+        SubtitleListFragment subtitleListFragment = SubtitleListFragment.newInstance();
+        mFragmentList.add(subtitleListFragment);
+
+//        SubtitleFragment subtitleFragment = SubtitleFragment.newInstance();
+//        mFragmentList.add(subtitleFragment);
     }
 
     private void changeFragment(int position) {

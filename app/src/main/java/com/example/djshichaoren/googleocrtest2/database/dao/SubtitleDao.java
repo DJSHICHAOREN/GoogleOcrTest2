@@ -18,4 +18,7 @@ public interface SubtitleDao {
     @Query("SELECT * FROM SubtitleEntity WHERE name = :name")
     List<SubtitleEntity> querySubtitleByName(String name);
 
+    @Query("SELECT * FROM SubtitleEntity")
+    List<SubtitleEntity> queryAllSubtitle();
+
 }

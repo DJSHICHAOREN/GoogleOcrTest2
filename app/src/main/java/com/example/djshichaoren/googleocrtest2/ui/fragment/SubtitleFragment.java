@@ -66,25 +66,33 @@ public class SubtitleFragment extends Fragment {
 
         String subtitleName = "subtitle.srt";
 
-        SubtitleEntity subtitleEntity = SubtitleDatabaseUtil.getSubtitleEntity(getContext(), subtitleName);
-        if(subtitleEntity == null){
-            subtitleEntity = SubtitleDatabaseUtil.insertSubtitleEntity(getContext(), subtitleName);
+        SubtitleEntity subtitleEntity = null;
+        Bundle arguments = getArguments();
+        if(arguments != null){
+            subtitleEntity = (SubtitleEntity)arguments.getSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY);
         }
+
+//        SubtitleEntity subtitleEntity = SubtitleDatabaseUtil.getSubtitleEntity(getContext(), subtitleName);
+//        if(subtitleEntity == null){
+//            subtitleEntity = SubtitleDatabaseUtil.insertSubtitleEntity(getContext(), subtitleName);
+//        }
 
 //        long id = subtitleDao.insertSubtitle(new SubtitleEntity(subtitleName));
 //        tv_content.setText(subtitle.toString());
 
-        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        rc_subtitle.setLayoutManager(mLinearLayoutManager);
-        mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
-        rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
-        rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                outRect.bottom = 60;
-            }
-        });
+        if(subtitleEntity != null){
+            mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            rc_subtitle.setLayoutManager(mLinearLayoutManager);
+            mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
+            rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
+            rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                    super.getItemOffsets(outRect, view, parent, state);
+                    outRect.bottom = 60;
+                }
+            });
+        }
 
         return root;
     }
@@ -109,7 +117,9 @@ public class SubtitleFragment extends Fragment {
         editor.apply();
     }
 
-    public static SubtitleFragment newInstance(){
-        return new SubtitleFragment();
+    public static SubtitleFragment newInstance(Bundle args){
+        SubtitleFragment subtitleFragment = new SubtitleFragment();
+        subtitleFragment.setArguments(args);
+        return subtitleFragment;
     }
 }

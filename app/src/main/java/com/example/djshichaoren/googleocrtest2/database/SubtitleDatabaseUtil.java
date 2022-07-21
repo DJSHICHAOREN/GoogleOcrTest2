@@ -58,6 +58,14 @@ public class SubtitleDatabaseUtil {
         return null;
     }
 
+    public static List<SubtitleEntity> getAllSubtitle(Context context){
+        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
+        SubtitleDao subtitleDao = subtitleDatabase.getSubtitleDao();
+
+        List<SubtitleEntity> subtitleEntityList = subtitleDao.queryAllSubtitle();
+        return subtitleEntityList;
+    }
+
     public static SubtitleEntity insertSubtitleEntity(Context context, String name){
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
         SubtitleDao subtitleDao = subtitleDatabase.getSubtitleDao();

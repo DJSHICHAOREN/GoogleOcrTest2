@@ -23,7 +23,7 @@ public class SubtitleActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fl_content, SubtitleFragment.newInstance());
+        fragmentTransaction.replace(R.id.fl_content, SubtitleFragment.newInstance(getIntent().getExtras()));
         fragmentTransaction.commit();
     }
 }
