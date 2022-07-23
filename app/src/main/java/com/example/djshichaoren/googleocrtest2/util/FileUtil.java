@@ -1,12 +1,16 @@
 package com.example.djshichaoren.googleocrtest2.util;
 
+import static com.example.djshichaoren.googleocrtest2.config.Config.BASE_FOLDER_NAME;
+
 import android.content.Context;
 import android.util.Log;
 
-import com.example.djshichaoren.googleocrtest2.R;
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +27,66 @@ public class FileUtil {
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
         }
+    }
+
+    public static void writeTheInputStreamToLocalFile(InputStream inputStream, String outputFileName, Context context){
+        File file = createFile(outputFileName, context);
+        if (file == null) return;
+        try{
+            long size = 0;
+            BufferedInputStream in = new BufferedInputStream(inputStream);
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+            int len = -1;
+            byte[] b = new byte[1024];
+            while((len = in.read(b)) != -1){
+                out.write(b, 0, len);
+                size += len;
+            }
+            in.close();
+            out.close();
+        }
+        catch (Exception exception){
+
+        }
+
+    }
+
+    public static boolean createDirectory(String directoryPath){
+        // 创建文件夹
+        File dir = new File(directoryPath);
+        if (!dir.exists()) {
+            boolean res = dir.mkdirs();
+            return res;
+        }
+        else{
+            return true;
+        }
+    }
+
+    public static File createFile(String fileName, Context context){
+        try {
+            String directoryPath = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/" + "subtitles";
+            if(createDirectory(directoryPath)){
+
+                File file = new File(directoryPath, fileName);
+                file.createNewFile();
+                return file;
+            }
+        }
+        catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static File getSubtitleFile(Context context, String fileName){
+        String directoryPath = context.getApplicationContext().getFilesDir().getAbsolutePath() + "/" + "subtitles";
+        File dir = new File(directoryPath);
+        if(dir.exists()){
+            return new File(directoryPath, fileName);
+        }
+        return null;
     }
 
     public static String readFromFile(Context context, String fileName) {

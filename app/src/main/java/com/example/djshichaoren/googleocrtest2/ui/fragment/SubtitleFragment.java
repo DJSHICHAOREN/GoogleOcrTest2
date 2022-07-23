@@ -19,6 +19,7 @@ import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 
+import java.io.File;
 import java.io.InputStream;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.djshichaoren.googleocrtest2.ui.adapter.SubtitleRecyclerViewAdapter;
+import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 
 public class SubtitleFragment extends Fragment {
@@ -57,14 +59,9 @@ public class SubtitleFragment extends Fragment {
         //        SRTSub subtitle = parser.parse(file, null);
 
 
-        SRTParser parser = new SRTParser();
-        InputStream inputStream = getContext().getResources().openRawResource(R.raw.subtitle);
-        SRTSub subtitle = parser.parse(inputStream, "subtitle.srt", null);
-
-        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(getContext());
-        SubtitleDao subtitleDao = subtitleDatabase.getSubtitleDao();
-
-        String subtitleName = "subtitle.srt";
+//        SRTParser parser = new SRTParser();
+//        InputStream inputStream = getContext().getResources().openRawResource(R.raw.subtitle);
+//        SRTSub subtitle = parser.parse(inputStream, "subtitle.srt", null);
 
         SubtitleEntity subtitleEntity = null;
         Bundle arguments = getArguments();
@@ -72,26 +69,24 @@ public class SubtitleFragment extends Fragment {
             subtitleEntity = (SubtitleEntity)arguments.getSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY);
         }
 
-//        SubtitleEntity subtitleEntity = SubtitleDatabaseUtil.getSubtitleEntity(getContext(), subtitleName);
-//        if(subtitleEntity == null){
-//            subtitleEntity = SubtitleDatabaseUtil.insertSubtitleEntity(getContext(), subtitleName);
-//        }
-
-//        long id = subtitleDao.insertSubtitle(new SubtitleEntity(subtitleName));
-//        tv_content.setText(subtitle.toString());
-
         if(subtitleEntity != null){
-            mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            rc_subtitle.setLayoutManager(mLinearLayoutManager);
-            mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
-            rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
-            rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
-                @Override
-                public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                    super.getItemOffsets(outRect, view, parent, state);
-                    outRect.bottom = 60;
+            File subtitleFile = FileUtil.getSubtitleFile(getContext(), subtitleEntity.name);
+                if(subtitleFile != null){
+                    SRTParser parser = new SRTParser();
+                    SRTSub subtitle = parser.parse(subtitleFile,  null);
+
+                    mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                    rc_subtitle.setLayoutManager(mLinearLayoutManager);
+                    mSubtitleRecyclerViewAdapter = new SubtitleRecyclerViewAdapter(getContext(), subtitle, mTranslator, subtitleEntity);
+                    rc_subtitle.setAdapter(mSubtitleRecyclerViewAdapter);
+                    rc_subtitle.addItemDecoration(new RecyclerView.ItemDecoration() {
+                        @Override
+                        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                            super.getItemOffsets(outRect, view, parent, state);
+                            outRect.bottom = 60;
+                        }
+                    });
                 }
-            });
         }
 
         return root;

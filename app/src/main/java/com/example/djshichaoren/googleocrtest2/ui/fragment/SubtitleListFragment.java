@@ -14,14 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
+import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
+import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 import com.example.djshichaoren.googleocrtest2.ui.adapter.SubtitleListRecyclerViewAdapter;
+import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 
+import java.io.InputStream;
 import java.util.List;
 
 public class SubtitleListFragment extends Fragment {
 
     private RecyclerView rv_subtitle_list;
     SubtitleListRecyclerViewAdapter mSubtitleListRecyclerViewAdapter;
+    private static final String DEFAULT_SUBTITLE_NAME  = "星际穿越.srt";
 
     @Nullable
     @Override
@@ -34,6 +39,17 @@ public class SubtitleListFragment extends Fragment {
         if(subtitleEntityList != null){
             mSubtitleListRecyclerViewAdapter = new SubtitleListRecyclerViewAdapter(subtitleEntityList);
             rv_subtitle_list.setAdapter(mSubtitleListRecyclerViewAdapter);
+        }
+
+        SubtitleEntity subtitleEntity = SubtitleDatabaseUtil.getSubtitleEntity(getContext(), DEFAULT_SUBTITLE_NAME);
+        if(subtitleEntity == null){
+            subtitleEntity = SubtitleDatabaseUtil.insertSubtitleEntity(getContext(), DEFAULT_SUBTITLE_NAME);
+
+            InputStream inputStream = getContext().getResources().openRawResource(R.raw.subtitle);
+            FileUtil.writeTheInputStreamToLocalFile(inputStream, DEFAULT_SUBTITLE_NAME, getContext());
+
+            subtitleEntityList.add(subtitleEntity);
+            mSubtitleListRecyclerViewAdapter.notifyDataSetChanged();
         }
 
         return view;
