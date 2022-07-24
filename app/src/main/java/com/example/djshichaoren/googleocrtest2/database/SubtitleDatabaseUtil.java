@@ -107,11 +107,12 @@ public class SubtitleDatabaseUtil {
         wordSceneDao.updateWordScene(wordSceneEntity);
     }
 
-    public static WordSceneEntity insertWordSceneEntity(Context context, int subtitleSentenceId, int newWordId, String wordTranslation, boolean isNew){
+    public static WordSceneEntity insertWordSceneEntity(Context context, int subtitleSentenceId
+            , int newWordId, int subtitleId, String wordTranslation, boolean isNew, int subtitleSentencePosition, String word){
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
         WordSceneDao wordSceneDao = subtitleDatabase.getWordSceneDao();
 
-        WordSceneEntity wordSceneEntity = new WordSceneEntity(subtitleSentenceId, newWordId, wordTranslation, isNew);
+        WordSceneEntity wordSceneEntity = new WordSceneEntity(subtitleSentenceId, newWordId, subtitleId, wordTranslation, isNew, subtitleSentencePosition, word);
         wordSceneDao.insertNewWord(wordSceneEntity);
         return wordSceneEntity;
     }
@@ -126,6 +127,14 @@ public class SubtitleDatabaseUtil {
         }
 
         return null;
+    }
+
+    public static List<WordSceneEntity> getAllWordSceneEntityWithSubtitleId(Context context, int subtitleId){
+        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
+        WordSceneDao wordSceneDao = subtitleDatabase.getWordSceneDao();
+
+        List<WordSceneEntity> wordSceneEntityList = wordSceneDao.queryWordSceneWithSubtitleId(subtitleId);
+        return wordSceneEntityList;
     }
 
 

@@ -67,10 +67,12 @@ public class ScreenShotter {
 
             mMediaProjection = mediaProjection;
 
-            mVirtualDisplay = mediaProjection.createVirtualDisplay("ScreenCapture",
-                    mScreenWidth, mScreenHeight, mScreenDpi,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    mImageReader.getSurface(), null, null);
+            if(mImageReader != null){
+                mVirtualDisplay = mediaProjection.createVirtualDisplay("ScreenCapture",
+                        mScreenWidth, mScreenHeight, mScreenDpi,
+                        DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                        mImageReader.getSurface(), null, null);
+            }
         }
     }
 

@@ -54,7 +54,7 @@ public class TranslationResultView extends LinearLayout {
         ll_whole = root.findViewById(R.id.ll_whole);
     }
 
-    public void setData(TranslateResult translateResult, int subtitleSentenceId, int wordId){
+    public void setData(TranslateResult translateResult, int subtitleSentenceId, int wordId, int subtitleId, int subtitleSentencePosition, String word){
         mTranslateResult = translateResult;
 
         ll_whole.removeAllViews();
@@ -125,7 +125,8 @@ public class TranslationResultView extends LinearLayout {
 
                                 WordSceneEntity wordSceneEntity = SubtitleDatabaseUtil.getWordSceneEntity(view.getContext(), subtitleSentenceId, wordId);
                                 if(wordSceneEntity == null){
-                                    wordSceneEntity = SubtitleDatabaseUtil.insertWordSceneEntity(view.getContext(), subtitleSentenceId, wordId, mean, true);
+                                    wordSceneEntity = SubtitleDatabaseUtil.insertWordSceneEntity(view.getContext(), subtitleSentenceId, wordId, subtitleId
+                                            , mean, true, subtitleSentencePosition, word);
                                 }
 
 

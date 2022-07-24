@@ -31,13 +31,13 @@ public class SubtitleRecyclerViewAdapter extends RecyclerView.Adapter<BaseVH> {
     @NonNull
     @Override
     public BaseVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-
         return new SubtitleItemVH(LayoutInflater.from(mContext).inflate(R.layout.layout_subtitle_item_vh, parent, false), mTranslator, mSubtitleEntity);
     }
 
     @Override
     public void onBindViewHolder(@NonNull BaseVH holder, int position) {
+        // 对于SubtitleItemVH，position指的是sentence在subtitle中的位置
+        holder.itemView.setTag(position);
         holder.bind(mSubtitle.getSrtLine(position));
     }
 

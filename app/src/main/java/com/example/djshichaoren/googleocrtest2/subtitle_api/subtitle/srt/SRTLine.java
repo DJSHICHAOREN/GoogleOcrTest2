@@ -1,7 +1,9 @@
 package com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt;
 
+import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.common.SubtitleLine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +16,8 @@ public class SRTLine extends SubtitleLine<SRTTime> {
     private static final String NEW_LINE = "\n";
 
     private int id;
+
+    private List<WordSceneEntity> wordSceneEntityList;
 
     public SRTLine(int id, SRTTime time, List<String> textLines) {
 
@@ -64,6 +68,17 @@ public class SRTLine extends SubtitleLine<SRTTime> {
             return time.toString();
         }
         return "";
+    }
+
+    public void addWordSceneEntity(WordSceneEntity wordSceneEntity){
+        if(wordSceneEntityList == null){
+            wordSceneEntityList = new ArrayList<>();
+        }
+        wordSceneEntityList.add(wordSceneEntity);
+    }
+
+    public List<WordSceneEntity> getWordSceneEntityList(){
+        return wordSceneEntityList;
     }
 
 }

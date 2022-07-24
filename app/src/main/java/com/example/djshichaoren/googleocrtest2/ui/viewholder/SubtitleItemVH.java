@@ -16,6 +16,7 @@ import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.entity.NewWordEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleSentenceEntity;
+import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTLine;
 import com.example.djshichaoren.googleocrtest2.ui.view.TranslationResultView;
@@ -24,6 +25,9 @@ import com.google.android.gms.vision.text.Line;
 
 
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SubtitleItemVH extends BaseVH {
 
@@ -63,6 +67,7 @@ public class SubtitleItemVH extends BaseVH {
     public void bind(SRTLine srtLine) {
         if(srtLine == null) return;
 
+        int sentencePosition = (int)itemView.getTag();
         tv_id.setText(srtLine.getId() + "");
         tv_time.setText(srtLine.getTimeString());
         tv_chinese.setText(srtLine.getChineseString());
@@ -80,6 +85,15 @@ public class SubtitleItemVH extends BaseVH {
             }
         });
 
+        // 得到此句中全部生词
+        List<WordSceneEntity> wordSceneEntityList = srtLine.getWordSceneEntityList();
+        List<String> newWordList = new ArrayList<>();
+        if(wordSceneEntityList != null){
+            for(WordSceneEntity wordSceneEntity : wordSceneEntityList){
+                newWordList.add(wordSceneEntity.word);
+            }
+        }
+
         translation_result_view.clearAllViews();
 
         ll_whole.post(new Runnable() {
@@ -92,7 +106,6 @@ public class SubtitleItemVH extends BaseVH {
 
                     String[] wordsArray = srtLine.getEnglishString().split("\\s+");
                     for(String word : wordsArray){
-
                         // 创建单词控件
                         TextView wordView = new TextView(SubtitleItemVH.this.itemView.getContext());
                         LinearLayout.LayoutParams wordLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -100,8 +113,18 @@ public class SubtitleItemVH extends BaseVH {
                         wordView.setText(word);
                         wordView.setTextSize(20);
                         wordView.setPadding(0, 0, mWordPaddingRight, 0);
-                        wordView.setTextColor(UNSELECTED_TEXT_COLOR);
-                        wordView.setTag(0);
+                        if(!newWordList.contains(word)){
+                            // 创建普通单词控件
+                            wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                            wordView.setTag(0);
+                        }
+                        else{
+                            // 创建生词控件
+                            wordView.setTextColor(SELECTED_TEXT_COLOR);
+                            wordView.setTag(1);
+                        }
+
+
                         wordView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -133,7 +156,7 @@ public class SubtitleItemVH extends BaseVH {
                                                 mHandler.post(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        translation_result_view.setData(translateResult, subtitleSentenceId, newWordId);
+                                                        translation_result_view.setData(translateResult, subtitleSentenceId, newWordId, mSubtitleEntity.id, sentencePosition, word);
                                                     }
                                                 });
                                             }

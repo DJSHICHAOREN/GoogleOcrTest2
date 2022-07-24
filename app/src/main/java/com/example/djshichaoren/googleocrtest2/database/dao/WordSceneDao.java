@@ -21,6 +21,9 @@ public interface WordSceneDao {
     @Query("SELECT * FROM WordSceneEntity WHERE subtitle_sentence_id = :subtitleSentenceId AND new_word_id = :newWordId")
     List<WordSceneEntity> queryWordSceneWithSubtitleSentenceIdAndNewWordId(int subtitleSentenceId, int newWordId);
 
+    @Query("SELECT * FROM WordSceneEntity WHERE subtitle_id = :subtitleId AND is_new = TRUE ORDER BY subtitle_sentence_position")
+    List<WordSceneEntity> queryWordSceneWithSubtitleId(int subtitleId);
+
     @Update
     int updateWordScene(WordSceneEntity wordSceneEntity);
 
