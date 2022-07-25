@@ -15,35 +15,35 @@ import java.util.List;
 
 public class SubtitleDatabaseUtil {
 
-    // 单词表
-    public static void updateNewWordEntity(Context context, NewWordEntity newWordEntity){
-        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
-        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
-
-        newWordDao.updateNewWord(newWordEntity);
-    }
-
-    public static NewWordEntity insertNewWordEntity(Context context, String word){
-        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
-        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
-
-        NewWordEntity newWordEntity = new NewWordEntity(word, true);
-        long id = newWordDao.insertNewWord(newWordEntity);
-        newWordEntity.id = (int)id;
-        return newWordEntity;
-    }
-
-    public static NewWordEntity getNewWordEntity(Context context, String word){
-        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
-        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
-
-        List<NewWordEntity> newWordEntityList = newWordDao.queryNewWordWithWordString(word);
-        if(newWordEntityList != null && newWordEntityList.size() > 0){
-            return newWordEntityList.get(0);
-        }
-
-        return null;
-    }
+//    // 单词表
+//    public static void updateNewWordEntity(Context context, NewWordEntity newWordEntity){
+//        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
+//        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
+//
+//        newWordDao.updateNewWord(newWordEntity);
+//    }
+//
+//    public static NewWordEntity insertNewWordEntity(Context context, String word){
+//        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
+//        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
+//
+//        NewWordEntity newWordEntity = new NewWordEntity(word, true);
+//        long id = newWordDao.insertNewWord(newWordEntity);
+//        newWordEntity.id = (int)id;
+//        return newWordEntity;
+//    }
+//
+//    public static NewWordEntity getNewWordEntity(Context context, String word){
+//        SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
+//        NewWordDao newWordDao = subtitleDatabase.getNewWordDao();
+//
+//        List<NewWordEntity> newWordEntityList = newWordDao.queryNewWordWithWordString(word);
+//        if(newWordEntityList != null && newWordEntityList.size() > 0){
+//            return newWordEntityList.get(0);
+//        }
+//
+//        return null;
+//    }
 
     // 字幕表
     public static SubtitleEntity getSubtitleEntity(Context context, String name){
@@ -107,21 +107,20 @@ public class SubtitleDatabaseUtil {
         wordSceneDao.updateWordScene(wordSceneEntity);
     }
 
-    public static WordSceneEntity insertWordSceneEntity(Context context, int subtitleSentenceId
-            , int newWordId, int subtitleId, String wordTranslation, boolean isNew, int subtitleSentencePosition, String word){
+    public static WordSceneEntity insertWordSceneEntity(Context context, int subtitleSentenceId, int subtitleId, String wordTranslation, boolean isNew, int subtitleSentencePosition, String word){
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
         WordSceneDao wordSceneDao = subtitleDatabase.getWordSceneDao();
 
-        WordSceneEntity wordSceneEntity = new WordSceneEntity(subtitleSentenceId, newWordId, subtitleId, wordTranslation, isNew, subtitleSentencePosition, word);
+        WordSceneEntity wordSceneEntity = new WordSceneEntity(subtitleSentenceId, subtitleId, wordTranslation, isNew, subtitleSentencePosition, word);
         wordSceneDao.insertNewWord(wordSceneEntity);
         return wordSceneEntity;
     }
 
-    public static WordSceneEntity getWordSceneEntity(Context context, int subtitleSentenceId, int newWordId){
+    public static WordSceneEntity getWordSceneEntity(Context context, int subtitleId, int subtitleSentenceId, String word){
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
         WordSceneDao wordSceneDao = subtitleDatabase.getWordSceneDao();
 
-        List<WordSceneEntity> wordSceneEntityList = wordSceneDao.queryWordSceneWithSubtitleSentenceIdAndNewWordId(subtitleSentenceId, newWordId);
+        List<WordSceneEntity> wordSceneEntityList = wordSceneDao.queryWordSceneWithSubtitleIdAndSubtitleSentenceIdAndWord(subtitleId, subtitleSentenceId, word);
         if(wordSceneEntityList != null && wordSceneEntityList.size() > 0){
             return wordSceneEntityList.get(0);
         }

@@ -3,6 +3,7 @@ package com.example.djshichaoren.googleocrtest2.ui.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +55,7 @@ public class TranslationResultView extends LinearLayout {
         ll_whole = root.findViewById(R.id.ll_whole);
     }
 
-    public void setData(TranslateResult translateResult, int subtitleSentenceId, int wordId, int subtitleId, int subtitleSentencePosition, String word){
+    public void setData(TranslateResult translateResult, WordSceneEntity wordSceneEntity){
         mTranslateResult = translateResult;
 
         ll_whole.removeAllViews();
@@ -123,13 +124,6 @@ public class TranslationResultView extends LinearLayout {
                             @Override
                             public void onClick(View view) {
 
-                                WordSceneEntity wordSceneEntity = SubtitleDatabaseUtil.getWordSceneEntity(view.getContext(), subtitleSentenceId, wordId);
-                                if(wordSceneEntity == null){
-                                    wordSceneEntity = SubtitleDatabaseUtil.insertWordSceneEntity(view.getContext(), subtitleSentenceId, wordId, subtitleId
-                                            , mean, true, subtitleSentencePosition, word);
-                                }
-
-
                                 if((int)tvMean.getTag() == 0){
                                     tvMean.setTextColor(SELECTED_TEXT_COLOR);
                                     tvMean.setTag(1);
@@ -138,6 +132,7 @@ public class TranslationResultView extends LinearLayout {
                                     wordSceneEntity.wordTranslation = mean;
                                     SubtitleDatabaseUtil.updateWordSceneEntity(view.getContext(), wordSceneEntity);
 
+                                    // 把其他翻译的标记去掉
                                     if(mLastSelectedTranslationTextView != tvMean && mLastSelectedTranslationTextView != null){
                                         mLastSelectedTranslationTextView.setTextColor(UNSELECTED_TEXT_COLOR);
                                         mLastSelectedTranslationTextView.setTag(0);

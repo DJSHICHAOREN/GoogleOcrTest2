@@ -85,7 +85,7 @@ public class SubtitleFragment extends Fragment {
                 List<WordSceneEntity> wordSceneEntityList = SubtitleDatabaseUtil.getAllWordSceneEntityWithSubtitleId(getContext(), subtitleEntity.id);
 //                Collections.sort(wordSceneEntityList);
                 for (WordSceneEntity wordSceneEntity : wordSceneEntityList) {
-                    Log.d("lwd", wordSceneEntity.subtitleSentencePosition + " " + wordSceneEntity.newWordId);
+                    Log.d("lwd", wordSceneEntity.subtitleSentencePosition + " " + wordSceneEntity.word);
                 }
 
                 // 将生词场景加入字幕数据中

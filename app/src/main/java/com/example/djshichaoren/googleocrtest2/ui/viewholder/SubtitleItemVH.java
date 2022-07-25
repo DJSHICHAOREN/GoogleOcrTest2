@@ -113,7 +113,11 @@ public class SubtitleItemVH extends BaseVH {
                         wordView.setText(word);
                         wordView.setTextSize(20);
                         wordView.setPadding(0, 0, mWordPaddingRight, 0);
-                        if(!newWordList.contains(word)){
+
+                        // 可查询单词，数据库单词
+                        final String pureWord = StringCleaner.cleanWordString(word);
+
+                        if(!newWordList.contains(pureWord)){
                             // 创建普通单词控件
                             wordView.setTextColor(UNSELECTED_TEXT_COLOR);
                             wordView.setTag(0);
@@ -123,7 +127,6 @@ public class SubtitleItemVH extends BaseVH {
                             wordView.setTextColor(SELECTED_TEXT_COLOR);
                             wordView.setTag(1);
                         }
-
 
                         wordView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -137,61 +140,57 @@ public class SubtitleItemVH extends BaseVH {
                                 }
                                 final int subtitleSentenceId = subtitleSentenceEntity.id;
 
-                                // 得到单词字段
-                                NewWordEntity newWordEntity = SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
-                                if(newWordEntity == null){
-                                    newWordEntity = SubtitleDatabaseUtil.insertNewWordEntity(v.getContext(), word);
+                                // 得到场景entity
+                                WordSceneEntity wordSceneEntity = SubtitleDatabaseUtil.getWordSceneEntity(v.getContext(), mSubtitleEntity.getId(), subtitleSentenceId, pureWord);
+                                if(wordSceneEntity == null){
+                                    wordSceneEntity = SubtitleDatabaseUtil.insertWordSceneEntity(v.getContext(), subtitleSentenceId, mSubtitleEntity.id
+                                            , "", true, sentencePosition, pureWord);
                                 }
-                                final int newWordId = newWordEntity.id;
-
                                 // 选中生词
                                 if((int)(wordView.getTag()) == 0) {
-                                    String cleanedWord = StringCleaner.cleanWordString(word);
 
-                                    if(!translation_result_view.getCurrentTranslationWordName().equals(cleanedWord)){
-                                        mTranslator.translate(cleanedWord, new Translator.TranslateCallback() {
-                                            @Override
-                                            public void success(TranslateResult translateResult) {
-                                                Log.d("lwd", "get word:" + word);
-                                                mHandler.post(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        translation_result_view.setData(translateResult, subtitleSentenceId, newWordId, mSubtitleEntity.id, sentencePosition, word);
-                                                    }
-                                                });
-                                            }
-                                        });
+                                    if(!translation_result_view.getCurrentTranslationWordName().equals(pureWord)){
+                                        translateAndShow(pureWord, wordSceneEntity);
                                     }
 
                                     wordView.setTag(1);
                                     wordView.setTextColor(SELECTED_TEXT_COLOR);
                                     translation_result_view.setVisibility(View.VISIBLE);
 
-                                    if(newWordEntity.isNew == false){
-                                        newWordEntity.isNew = true;
-                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newWordEntity);
+                                    if(wordSceneEntity.isNew == false){
+                                        wordSceneEntity.isNew = true;
+                                        SubtitleDatabaseUtil.updateWordSceneEntity(v.getContext(), wordSceneEntity);
                                     }
 
                                     // 取消选中之前选中的单词
-                                    if(mLastSelectedWordTextView != wordView && mLastSelectedWordTextView != null){
-                                        mLastSelectedWordTextView.setTag(0);
-                                        mLastSelectedWordTextView.setTextColor(UNSELECTED_TEXT_COLOR);
-                                    }
+//                                    if(mLastSelectedWordTextView != wordView && mLastSelectedWordTextView != null){
+//                                        mLastSelectedWordTextView.setTag(0);
+//                                        mLastSelectedWordTextView.setTextColor(UNSELECTED_TEXT_COLOR);
+//                                    }
                                     mLastSelectedWordTextView = wordView;
                                 }
                                 else{
-                                    // 取消选中生词
-                                    wordView.setTag(0);
-                                    wordView.setTextColor(UNSELECTED_TEXT_COLOR);
-                                    translation_result_view.setVisibility(View.GONE);
-                                    SubtitleDatabaseUtil.getNewWordEntity(v.getContext(), word);
+                                    // 对于已经选中的生词
+                                    if(!translation_result_view.getCurrentTranslationWordName().equals(pureWord)){
+                                        // 对于当前没用展示翻译的情况
+                                        translateAndShow(pureWord, wordSceneEntity);
+                                        translation_result_view.setVisibility(View.VISIBLE);
 
-                                    if(newWordEntity.isNew == true){
-                                        newWordEntity.isNew = false;
-                                        SubtitleDatabaseUtil.updateNewWordEntity(v.getContext(), newWordEntity);
                                     }
+                                    else{
+                                        // 对于已经展示翻译的情况
+                                        // 取消选中生词
+                                        wordView.setTag(0);
+                                        wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                                        translation_result_view.setVisibility(View.GONE);
 
-                                    mLastSelectedWordTextView = null;
+                                        if(wordSceneEntity.isNew == true){
+                                            wordSceneEntity.isNew = false;
+                                            SubtitleDatabaseUtil.updateWordSceneEntity(v.getContext(), wordSceneEntity);
+                                        }
+
+                                        mLastSelectedWordTextView = null;
+                                    }
                                 }
 
                             }
@@ -209,14 +208,35 @@ public class SubtitleItemVH extends BaseVH {
                         }
 
                         // 添加单词
-                        wordLinearLayout.addView(wordView, wordLayoutParams);
-                        freeWidth -= wordWidth + mWordPaddingRight;
+                        if(wordLinearLayout != null){
+                            wordLinearLayout.addView(wordView, wordLayoutParams);
+                            freeWidth -= wordWidth + mWordPaddingRight;
+                        }
+                        else{
+                            int a = 1;
+                        }
+
 
                     }
                 }
             }
         });
 
+    }
+
+    public void translateAndShow(String word, final WordSceneEntity wordSceneEntity){
+        mTranslator.translate(word, new Translator.TranslateCallback() {
+            @Override
+            public void success(TranslateResult translateResult) {
+                Log.d("lwd", "get word:" + word);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        translation_result_view.setData(translateResult, wordSceneEntity);
+                    }
+                });
+            }
+        });
     }
 
 

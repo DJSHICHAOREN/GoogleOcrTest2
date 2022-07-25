@@ -20,7 +20,7 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(
-        entities = {SubtitleEntity.class, NewWordEntity.class, WordSceneEntity.class, SubtitleSentenceEntity.class},
+        entities = {SubtitleEntity.class, WordSceneEntity.class, SubtitleSentenceEntity.class},
         version = 1,
         exportSchema = false
 )
@@ -53,8 +53,6 @@ public abstract class SubtitleDatabase extends RoomDatabase {
     }
 
     public abstract SubtitleDao getSubtitleDao();
-
-    public abstract NewWordDao getNewWordDao();
 
     public abstract SubtitleSentenceDao getSubtitleSentenceDao();
 

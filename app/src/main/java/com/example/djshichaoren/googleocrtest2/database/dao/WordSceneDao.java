@@ -18,8 +18,8 @@ public interface WordSceneDao {
     void insertNewWord(WordSceneEntity wordSceneEntity);
 
 
-    @Query("SELECT * FROM WordSceneEntity WHERE subtitle_sentence_id = :subtitleSentenceId AND new_word_id = :newWordId")
-    List<WordSceneEntity> queryWordSceneWithSubtitleSentenceIdAndNewWordId(int subtitleSentenceId, int newWordId);
+    @Query("SELECT * FROM WordSceneEntity WHERE subtitle_id = :subtitleId AND subtitle_sentence_id = :subtitleSentenceId AND word = :word")
+    List<WordSceneEntity> queryWordSceneWithSubtitleIdAndSubtitleSentenceIdAndWord(int subtitleId, int subtitleSentenceId, String word);
 
     @Query("SELECT * FROM WordSceneEntity WHERE subtitle_id = :subtitleId AND is_new = TRUE ORDER BY subtitle_sentence_position")
     List<WordSceneEntity> queryWordSceneWithSubtitleId(int subtitleId);
