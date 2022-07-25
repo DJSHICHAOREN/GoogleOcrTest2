@@ -97,7 +97,7 @@ public class RealMainActivity extends AppCompatActivity {
             }
         });
 
-        requestMediaProjectPermission();
+//        requestMediaProjectPermission();
 
     }
 
@@ -165,14 +165,17 @@ public class RealMainActivity extends AppCompatActivity {
     public void startRecognitionWithPermission(){
         // 获取截屏权限
         requestMediaProjectPermission();
-        requestOverlayPermission();
+//        requestOverlayPermission();
 
-        startRecognizeService();
     }
 
     // 开启截屏服务
     public void startRecognizeService(){
         mWorkService.startAll();
+    }
+
+    public void stopRecognizeService(){
+        mWorkService.stopAll();
     }
 
     @Override
@@ -204,8 +207,14 @@ public class RealMainActivity extends AppCompatActivity {
                 public void successCallback(int resultCode, Intent data) {
                     MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
                     mScreenShotter.setMediaProjection(mediaProjection);
+
+                    startRecognizeService();
+
                 }
             };
+        }
+        else{
+            startRecognizeService();
         }
 
     }

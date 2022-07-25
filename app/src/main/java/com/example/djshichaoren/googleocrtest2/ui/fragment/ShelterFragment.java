@@ -37,6 +37,9 @@ public class ShelterFragment extends Fragment {
     private static final int DRAW_OVERLAY_REQUEST_CODE = 1;
     private Button btn_start;
 
+    private static final String START_RECOGNIZE_BUTTON_TEXT = "开始识别";
+    private static final String STOP_RECOGNIZE_BUTTON_TEXT = "结束识别";
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,13 +58,24 @@ public class ShelterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shelter, container, false);
         btn_start = view.findViewById(R.id.btn_start);
+        btn_start.setTag(0);
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(getActivity() instanceof RealMainActivity){
                     RealMainActivity realMainActivity = (RealMainActivity) getActivity();
-                    realMainActivity.startRecognitionWithPermission();
+                    if((int)btn_start.getTag() == 0){
+                        realMainActivity.startRecognitionWithPermission();
+                        btn_start.setText(STOP_RECOGNIZE_BUTTON_TEXT);
+                        btn_start.setTag(1);
+                    }
+                    else{
+                        realMainActivity.stopRecognizeService();
+                        btn_start.setText(START_RECOGNIZE_BUTTON_TEXT);
+                        btn_start.setTag(0);
+                    }
+
                 }
 
 //                boolean hasPermission = FloatPermissionManager.getInstance().applyFloatWindow(getContext(), new UphoneCallback() {

@@ -51,7 +51,7 @@ public class FloatContainer extends FrameLayout {
                     mScreenHeight = Math.min(ScreenUtil.getScreenWidth(mContext), ScreenUtil.getScreenHeight(mContext));
                 }
                 if(FloatContainer.this.getLayoutParams() instanceof WindowManager.LayoutParams){
-                    showOrUpdate();
+                    update();
                 }
             }
         });
@@ -208,13 +208,25 @@ public class FloatContainer extends FrameLayout {
         return layoutParams;
     }
 
-    public void showOrUpdate(){
+    public void stopShow(){
+        mWindowManager.removeView(this);
+    }
+
+    public void show(){
+        showOrUpdate(true);
+    }
+
+    public void update(){
+        showOrUpdate(false);
+    }
+
+    public void showOrUpdate(boolean isShow){
         WindowManager.LayoutParams layoutParams = generateLayoutParams();
 
         // 设置窗口支持透明度
         layoutParams.format = PixelFormat.TRANSPARENT;
 
-        if(mWindowManagerParams == null){
+        if(isShow){
             mWindowManager.addView(this, layoutParams);
         }
         else{

@@ -44,6 +44,8 @@ public class WorkService extends Service {
     private TranslationShowView mTranslationShowView;
     private Translator mTranslator = new JinshanTranslator();
     private SentenceDecomposer mSentenceDecomposer;
+    private Handler mRecognizeHandler = new Handler();
+    private boolean isStartRecognize;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -66,12 +68,20 @@ public class WorkService extends Service {
 
     public void createInteractionShowView(){
         mInteractionShowView = new InteractionShowView(getApplicationContext());
-        mInteractionShowView.showOrUpdate();
+        mInteractionShowView.show();
     }
 
     public void createTranslationShowView(){
         mTranslationShowView = new TranslationShowView(getApplicationContext());
-        mTranslationShowView.showOrUpdate();
+        mTranslationShowView.show();
+    }
+
+    public void stopAll(){
+        if(mInteractionShowView != null){
+            mInteractionShowView.stopShow();
+        }
+        isStartRecognize = false;
+
     }
 
     /**
@@ -85,14 +95,14 @@ public class WorkService extends Service {
         }
 
         if(mInteractionShowView == null){
-            createInteractionShowView();
+            mInteractionShowView = new InteractionShowView(getApplicationContext());
         }
+        mInteractionShowView.show();
 
 //        if(mTranslationShowView == null){
 //            createTranslationShowView();
 //        }
-
-        final Handler mRecognizeHandler = new Handler();
+        isStartRecognize = true;
         mRecognizeHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -127,8 +137,9 @@ public class WorkService extends Service {
 
 //                    Log.d("lwd", "content is :" + recognitionResult.mContent);
                 }
-
-                mRecognizeHandler.postDelayed(this, TIME);
+                if(isStartRecognize){
+                    mRecognizeHandler.postDelayed(this, TIME);
+                }
             }
         }, TIME);
     }
