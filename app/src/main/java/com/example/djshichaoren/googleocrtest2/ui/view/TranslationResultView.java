@@ -29,6 +29,7 @@ public class TranslationResultView extends LinearLayout {
     private int mFreeWidth;
     private static final int WORD_PADDING_LEFT  = 20;
     private TranslateResult mTranslateResult;
+    private WordSceneEntity mWordSceneEntity;
 
     private int SELECTED_TEXT_COLOR = Color.parseColor("#FF0000");
     private int UNSELECTED_TEXT_COLOR = Color.parseColor("#000000");
@@ -57,6 +58,7 @@ public class TranslationResultView extends LinearLayout {
 
     public void setData(TranslateResult translateResult, WordSceneEntity wordSceneEntity){
         mTranslateResult = translateResult;
+        mWordSceneEntity = wordSceneEntity;
 
         ll_whole.removeAllViews();
 
@@ -182,6 +184,7 @@ public class TranslationResultView extends LinearLayout {
 
     public String getCurrentTranslationWordName(){
         if(mTranslateResult == null || mTranslateResult.getWord_name() == null) return "";
-        return mTranslateResult.getWord_name();
+        if(mWordSceneEntity == null || mWordSceneEntity.word == null) return "";
+        return mWordSceneEntity.word;
     }
 }

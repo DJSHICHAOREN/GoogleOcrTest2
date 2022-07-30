@@ -48,6 +48,8 @@ public class SubtitleItemVH extends BaseVH {
     private SubtitleEntity mSubtitleEntity;
     private TextView mLastSelectedWordTextView;
     private Handler mHandler = new Handler();
+    private List<WordSceneEntity> mWordSceneEntityList;
+    private SRTLine mSrtLine;
 
     public SubtitleItemVH(@NonNull View itemView, Translator translator, SubtitleEntity subtitleEntity) {
         super(itemView);
@@ -66,6 +68,7 @@ public class SubtitleItemVH extends BaseVH {
     @Override
     public void bind(SRTLine srtLine) {
         if(srtLine == null) return;
+        mSrtLine = srtLine;
 
         int sentencePosition = (int)itemView.getTag();
         tv_id.setText(srtLine.getId() + "");
@@ -86,10 +89,10 @@ public class SubtitleItemVH extends BaseVH {
         });
 
         // 得到此句中全部生词
-        List<WordSceneEntity> wordSceneEntityList = srtLine.getWordSceneEntityList();
+        mWordSceneEntityList = srtLine.getWordSceneEntityList();
         List<String> newWordList = new ArrayList<>();
-        if(wordSceneEntityList != null){
-            for(WordSceneEntity wordSceneEntity : wordSceneEntityList){
+        if(mWordSceneEntityList != null){
+            for(WordSceneEntity wordSceneEntity : mWordSceneEntityList){
                 newWordList.add(wordSceneEntity.word);
             }
         }
@@ -146,6 +149,7 @@ public class SubtitleItemVH extends BaseVH {
                                     wordSceneEntity = SubtitleDatabaseUtil.insertWordSceneEntity(v.getContext(), subtitleSentenceId, mSubtitleEntity.id
                                             , "", true, sentencePosition, pureWord);
                                 }
+
                                 // 选中生词
                                 if((int)(wordView.getTag()) == 0) {
 
@@ -168,6 +172,8 @@ public class SubtitleItemVH extends BaseVH {
 //                                        mLastSelectedWordTextView.setTextColor(UNSELECTED_TEXT_COLOR);
 //                                    }
                                     mLastSelectedWordTextView = wordView;
+
+                                    updateAdapterData(wordSceneEntity, UpdateState.ADD);
                                 }
                                 else{
                                     // 对于已经选中的生词
@@ -190,6 +196,8 @@ public class SubtitleItemVH extends BaseVH {
                                         }
 
                                         mLastSelectedWordTextView = null;
+
+                                        updateAdapterData(wordSceneEntity, UpdateState.REMOVE);
                                     }
                                 }
 
@@ -223,6 +231,28 @@ public class SubtitleItemVH extends BaseVH {
         });
 
     }
+
+    // 更新adapter数据
+    private void updateAdapterData(WordSceneEntity wordSceneEntity, UpdateState updateState){
+        if(mWordSceneEntityList == null) {
+            if (mSrtLine != null){
+                mSrtLine.addWordSceneEntity(wordSceneEntity);
+                mWordSceneEntityList = mSrtLine.getWordSceneEntityList();
+            }
+            else{
+                return;
+            }
+        }
+
+        if(updateState == UpdateState.ADD){
+            mWordSceneEntityList.add(wordSceneEntity);
+        }
+        else{
+            mWordSceneEntityList.remove(wordSceneEntity);
+        }
+    }
+
+    public enum UpdateState{ ADD, REMOVE};
 
     public void translateAndShow(String word, final WordSceneEntity wordSceneEntity){
         mTranslator.translate(word, new Translator.TranslateCallback() {

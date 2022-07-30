@@ -84,9 +84,9 @@ public class SubtitleFragment extends Fragment {
                 // 获取生词场景
                 List<WordSceneEntity> wordSceneEntityList = SubtitleDatabaseUtil.getAllWordSceneEntityWithSubtitleId(getContext(), subtitleEntity.id);
 //                Collections.sort(wordSceneEntityList);
-                for (WordSceneEntity wordSceneEntity : wordSceneEntityList) {
-                    Log.d("lwd", wordSceneEntity.subtitleSentencePosition + " " + wordSceneEntity.word);
-                }
+//                for (WordSceneEntity wordSceneEntity : wordSceneEntityList) {
+//                    Log.d("lwd", wordSceneEntity.subtitleSentencePosition + " " + wordSceneEntity.word);
+//                }
 
                 // 将生词场景加入字幕数据中
                 for(WordSceneEntity wordSceneEntity : wordSceneEntityList){
