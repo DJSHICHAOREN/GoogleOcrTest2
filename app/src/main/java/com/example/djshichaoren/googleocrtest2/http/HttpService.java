@@ -1,10 +1,12 @@
 package com.example.djshichaoren.googleocrtest2.http;
 
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
+import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleSearchResult;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -17,4 +19,6 @@ public interface HttpService {
     @GET("api/dictionary.php")
     Call<JinshanTranslation> jinshanTranslate(@Query("w") String word, @Query("key") String key, @Query("type") String type);
 
+    @POST("search")
+    Call<SubtitleSearchResult> searchSubtitle(@Query("token") String token, @Query("q") String q, @Query("pos") int pos);
 }
