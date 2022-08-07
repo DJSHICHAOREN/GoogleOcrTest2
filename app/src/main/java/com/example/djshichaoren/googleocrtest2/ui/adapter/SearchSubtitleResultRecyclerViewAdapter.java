@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleSearchResult;
 import com.example.djshichaoren.googleocrtest2.ui.viewholder.SearchSubtitleResultItemVH;
+import com.example.djshichaoren.googleocrtest2.util.SubtitleHttpUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,10 @@ import java.util.List;
 public class SearchSubtitleResultRecyclerViewAdapter extends RecyclerView.Adapter<SearchSubtitleResultItemVH> {
 
     private List<SubtitleSearchResult.SubEntity> mSubList = new ArrayList<>();
+    private SubtitleHttpUtil mSubtitleHttpUtil;
 
-    public SearchSubtitleResultRecyclerViewAdapter(){
-
+    public SearchSubtitleResultRecyclerViewAdapter(SubtitleHttpUtil subtitleHttpUtil){
+        mSubtitleHttpUtil = subtitleHttpUtil;
     }
 
     @NonNull
@@ -29,7 +31,7 @@ public class SearchSubtitleResultRecyclerViewAdapter extends RecyclerView.Adapte
 
     @Override
     public void onBindViewHolder(@NonNull SearchSubtitleResultItemVH holder, int position) {
-        holder.setData(mSubList.get(position));
+        holder.setData(mSubList.get(position), mSubtitleHttpUtil);
     }
 
     @Override

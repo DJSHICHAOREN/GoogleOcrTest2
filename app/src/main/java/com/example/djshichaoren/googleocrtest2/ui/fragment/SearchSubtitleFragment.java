@@ -78,7 +78,7 @@ public class SearchSubtitleFragment extends DialogFragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rv_search_result.setLayoutManager(linearLayoutManager);
 
-        mSearchSubtitleResultRecyclerViewAdapter = new SearchSubtitleResultRecyclerViewAdapter();
+        mSearchSubtitleResultRecyclerViewAdapter = new SearchSubtitleResultRecyclerViewAdapter(mSubtitleHttpUtil);
         rv_search_result.setAdapter(mSearchSubtitleResultRecyclerViewAdapter);
         rv_search_result.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override

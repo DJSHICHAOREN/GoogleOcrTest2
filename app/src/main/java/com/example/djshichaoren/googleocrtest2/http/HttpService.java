@@ -1,6 +1,7 @@
 package com.example.djshichaoren.googleocrtest2.http;
 
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
+import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleDetailResult;
 import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleSearchResult;
 
 import io.reactivex.Observable;
@@ -21,4 +22,7 @@ public interface HttpService {
 
     @POST("search")
     Call<SubtitleSearchResult> searchSubtitle(@Query("token") String token, @Query("q") String q, @Query("pos") int pos);
+
+    @POST("detail")
+    Call<SubtitleDetailResult> querySubtitleDetail(@Query("token") String token, @Query("id") int id);
 }

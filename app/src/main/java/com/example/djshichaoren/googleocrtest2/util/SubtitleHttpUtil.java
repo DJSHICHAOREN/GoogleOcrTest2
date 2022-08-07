@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.djshichaoren.googleocrtest2.http.HttpService;
 import com.example.djshichaoren.googleocrtest2.http.bean.JinshanTranslation;
+import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleDetailResult;
 import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleSearchResult;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -57,8 +58,35 @@ public class SubtitleHttpUtil {
         });
     }
 
+    public void queryDetail(int id, QuerySubtitleDetailCallback querySubtitleDetailCallback){
+        Call<SubtitleDetailResult> call = mHttpService.querySubtitleDetail(SHOOTER_KEY, id);
+        call.enqueue(new Callback<SubtitleDetailResult>() {
+            @Override
+            public void onResponse(Call<SubtitleDetailResult> call, Response<SubtitleDetailResult> response) {
+                SubtitleDetailResult subtitleDetailResult = response.body();
+                if(subtitleDetailResult != null){
+                    if(subtitleDetailResult.status == 0){
+                        querySubtitleDetailCallback.success(subtitleDetailResult);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubtitleDetailResult> call, Throwable t) {
+                t.printStackTrace();
+                querySubtitleDetailCallback.error();
+            }
+        });
+
+    }
+
     public interface SearchSubtitleCallback{
         public void success(SubtitleSearchResult subtitleSearchResult);
+        public void error();
+    }
+
+    public interface QuerySubtitleDetailCallback{
+        public void success(SubtitleDetailResult subtitleDetailResult);
         public void error();
     }
 
