@@ -1,5 +1,6 @@
 package com.example.djshichaoren.googleocrtest2.ui.viewholder;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -9,9 +10,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleDetailResult;
 import com.example.djshichaoren.googleocrtest2.http.bean.SubtitleSearchResult;
+import com.example.djshichaoren.googleocrtest2.models.BaseEvent;
+import com.example.djshichaoren.googleocrtest2.util.SubtitleDownloadUtil;
 import com.example.djshichaoren.googleocrtest2.util.SubtitleHttpUtil;
+
+import org.greenrobot.eventbus.EventBus;
+
 
 public class SearchSubtitleResultItemVH extends RecyclerView.ViewHolder {
 
@@ -56,6 +63,29 @@ public class SearchSubtitleResultItemVH extends RecyclerView.ViewHolder {
                                         String fileName = fileEntity.f;
                                         if(fileName.contains("srt")){
                                             String url = fileEntity.url;
+                                            Toast.makeText(itemView.getContext(), "开始下载", Toast.LENGTH_SHORT).show();
+                                            SubtitleDownloadUtil.downloadFile(itemView.getContext(), fileEntity.url, fileEntity.f, new SubtitleDownloadUtil.FileDownloadCallback() {
+                                                @Override
+                                                public void onDownloading(int progress) {
+
+                                                }
+
+                                                @Override
+                                                public void onDownloadSuccess() {
+                                                    itemView.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            EventBus.getDefault().post(new BaseEvent(Constants.FLUSH_SUBTITLE_LIST_EVENT));
+                                                            Toast.makeText(itemView.getContext(), "下载成功", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+
+                                                }
+                                                @Override
+                                                public void onDownloadFailed() {
+                                                    Toast.makeText(itemView.getContext(), "下载失败", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                             isFindUrl = true;
                                             break flag;
                                         }

@@ -8,4 +8,6 @@ public class Constants {
     public static final String SP_SUBTITLE_SCROLL_DEPTH_KEY  = "SP_SUBTITLE_SCROLL_DEPTH_KEY";
 
     public static final String SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY  = "SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY";
+
+    public static final String FLUSH_SUBTITLE_LIST_EVENT = "FLUSH_SUBTITLE_LIST_EVENT";
 }

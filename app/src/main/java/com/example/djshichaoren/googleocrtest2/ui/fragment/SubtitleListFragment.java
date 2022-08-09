@@ -13,12 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
+import com.example.djshichaoren.googleocrtest2.models.BaseEvent;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 import com.example.djshichaoren.googleocrtest2.ui.adapter.SubtitleListRecyclerViewAdapter;
 import com.example.djshichaoren.googleocrtest2.util.FileUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.InputStream;
 import java.util.List;
@@ -29,6 +34,7 @@ public class SubtitleListFragment extends Fragment {
     private Button btn_add_network_subtitle;
     SubtitleListRecyclerViewAdapter mSubtitleListRecyclerViewAdapter;
     private static final String DEFAULT_SUBTITLE_NAME  = "星际穿越.srt";
+    private List<SubtitleEntity> mSubtitleEntityList;
 
     @Nullable
     @Override
@@ -38,9 +44,9 @@ public class SubtitleListFragment extends Fragment {
         btn_add_network_subtitle = view.findViewById(R.id.btn_add_network_subtitle);
 
         rv_subtitle_list.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
-        List<SubtitleEntity> subtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
-        if(subtitleEntityList != null){
-            mSubtitleListRecyclerViewAdapter = new SubtitleListRecyclerViewAdapter(subtitleEntityList);
+        mSubtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
+        if(mSubtitleEntityList != null){
+            mSubtitleListRecyclerViewAdapter = new SubtitleListRecyclerViewAdapter(mSubtitleEntityList);
             rv_subtitle_list.setAdapter(mSubtitleListRecyclerViewAdapter);
         }
 
@@ -51,7 +57,7 @@ public class SubtitleListFragment extends Fragment {
             InputStream inputStream = getContext().getResources().openRawResource(R.raw.subtitle);
             FileUtil.writeTheInputStreamToLocalFile(inputStream, DEFAULT_SUBTITLE_NAME, getContext());
 
-            subtitleEntityList.add(subtitleEntity);
+            mSubtitleEntityList.add(subtitleEntity);
             mSubtitleListRecyclerViewAdapter.notifyDataSetChanged();
         }
 
@@ -63,7 +69,27 @@ public class SubtitleListFragment extends Fragment {
             }
         });
 
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+
         return view;
+    }
+
+    @Subscribe
+    public void onEventMainThread(BaseEvent baseEvent) {
+        if(baseEvent == null) return;
+
+        if(Constants.FLUSH_SUBTITLE_LIST_EVENT.equals( baseEvent.getType())){
+            mSubtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
+            mSubtitleListRecyclerViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     public static SubtitleListFragment newInstance(){
