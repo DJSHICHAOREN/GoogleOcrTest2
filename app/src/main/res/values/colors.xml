@@ -6,4 +6,7 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="search_subtitle_result_item_content_header">#00FFFF</color>
+    <color name="search_subtitle_result_item_detail_content">#fdf0d5</color>
+    <color name="search_subtitle_result_item_detail_content_background_not_download">#34a0a4</color>
+    <color name="search_subtitle_result_item_detail_content_background_download">#D81B60</color>
 </resources>

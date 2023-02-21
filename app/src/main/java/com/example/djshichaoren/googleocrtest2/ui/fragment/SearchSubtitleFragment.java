@@ -46,6 +46,14 @@ public class SearchSubtitleFragment extends DialogFragment {
         ll_whole = rootView.findViewById(R.id.ll_whole);
         rv_search_result = rootView.findViewById(R.id.rv_search_result);
 
+        rv_search_result.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.top = 20;
+            }
+        });
+
         return rootView;
     }
 

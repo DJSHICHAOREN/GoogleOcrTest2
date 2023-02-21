@@ -36,4 +36,9 @@ public class SubtitleListRecyclerViewAdapter extends RecyclerView.Adapter<Subtit
     public int getItemCount() {
         return mSubtitleEntityList.size();
     }
+
+    public void setSubtitleEntityList(List<SubtitleEntity> subtitleEntityList){
+        if(subtitleEntityList == null) return;
+        mSubtitleEntityList = subtitleEntityList;
+    }
 }

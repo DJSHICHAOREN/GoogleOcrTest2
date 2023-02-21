@@ -82,6 +82,7 @@ public class SubtitleListFragment extends Fragment {
 
         if(Constants.FLUSH_SUBTITLE_LIST_EVENT.equals( baseEvent.getType())){
             mSubtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
+            mSubtitleListRecyclerViewAdapter.setSubtitleEntityList(mSubtitleEntityList);
             mSubtitleListRecyclerViewAdapter.notifyDataSetChanged();
         }
     }

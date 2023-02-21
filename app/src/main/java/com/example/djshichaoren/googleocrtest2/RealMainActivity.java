@@ -27,6 +27,7 @@ import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleListFragment;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.util.dark.DarkUtil;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
@@ -98,6 +99,7 @@ public class RealMainActivity extends AppCompatActivity {
         });
 
 //        requestMediaProjectPermission();
+        DarkUtil.init(getApplication());
 
     }
 

@@ -20,6 +20,7 @@ import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTLine;
 import com.example.djshichaoren.googleocrtest2.ui.view.TranslationResultView;
+import com.example.djshichaoren.googleocrtest2.util.dark.DarkUtil;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 import com.google.android.gms.vision.text.Line;
 
@@ -42,7 +43,9 @@ public class SubtitleItemVH extends BaseVH {
     private static final int mWordPaddingRight = 15;
 
     private int SELECTED_TEXT_COLOR = Color.parseColor("#FF0000");
+    private int SELECTED_TEXT_COLOR_DARK = Color.parseColor("#aaFF0000");
     private int UNSELECTED_TEXT_COLOR = Color.parseColor("#000000");
+    private int UNSELECTED_TEXT_COLOR_DARK = Color.parseColor("#aaFFFFFF");
 
     private Translator mTranslator;
     private SubtitleEntity mSubtitleEntity;
@@ -63,6 +66,8 @@ public class SubtitleItemVH extends BaseVH {
 
         mTranslator = translator;
         mSubtitleEntity = subtitleEntity;
+
+        setUIColor();
     }
 
     @Override
@@ -122,12 +127,12 @@ public class SubtitleItemVH extends BaseVH {
 
                         if(!newWordList.contains(pureWord)){
                             // 创建普通单词控件
-                            wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                            wordView.setTextColor(getTextColor(false));
                             wordView.setTag(0);
                         }
                         else{
                             // 创建生词控件
-                            wordView.setTextColor(SELECTED_TEXT_COLOR);
+                            wordView.setTextColor(getTextColor(true));
                             wordView.setTag(1);
                         }
 
@@ -158,7 +163,7 @@ public class SubtitleItemVH extends BaseVH {
                                     }
 
                                     wordView.setTag(1);
-                                    wordView.setTextColor(SELECTED_TEXT_COLOR);
+                                    wordView.setTextColor(getTextColor(true));
                                     translation_result_view.setVisibility(View.VISIBLE);
 
                                     if(wordSceneEntity.isNew == false){
@@ -187,7 +192,7 @@ public class SubtitleItemVH extends BaseVH {
                                         // 对于已经展示翻译的情况
                                         // 取消选中生词
                                         wordView.setTag(0);
-                                        wordView.setTextColor(UNSELECTED_TEXT_COLOR);
+                                        wordView.setTextColor(getTextColor(false));
                                         translation_result_view.setVisibility(View.GONE);
 
                                         if(wordSceneEntity.isNew == true){
@@ -230,6 +235,22 @@ public class SubtitleItemVH extends BaseVH {
             }
         });
 
+    }
+
+    public void setUIColor(){
+        Log.d("lwd", "darkMode:" + DarkUtil.isDarkMode(itemView.getContext()));
+        tv_id.setTextColor(getTextColor(false));
+        tv_time.setTextColor(getTextColor(false));
+        tv_chinese.setTextColor(getTextColor(false));
+    }
+
+    public int getTextColor(boolean isSelected){
+        if(isSelected){
+            return DarkUtil.isDarkMode(itemView.getContext()) ? SELECTED_TEXT_COLOR_DARK : SELECTED_TEXT_COLOR;
+        }
+        else{
+            return DarkUtil.isDarkMode(itemView.getContext()) ? UNSELECTED_TEXT_COLOR_DARK : UNSELECTED_TEXT_COLOR;
+        }
     }
 
     // 更新adapter数据

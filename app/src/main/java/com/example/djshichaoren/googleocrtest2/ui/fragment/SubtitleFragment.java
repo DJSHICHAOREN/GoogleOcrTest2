@@ -2,12 +2,14 @@ package com.example.djshichaoren.googleocrtest2.ui.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.djshichaoren.googleocrtest2.R;
@@ -36,11 +38,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.djshichaoren.googleocrtest2.ui.adapter.SubtitleRecyclerViewAdapter;
 import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
+import com.example.djshichaoren.googleocrtest2.util.dark.DarkUtil;
 
 public class SubtitleFragment extends Fragment {
 
-    private TextView tv_content;
     private RecyclerView rc_subtitle;
+    private LinearLayout ll_whole;
     private SubtitleRecyclerViewAdapter mSubtitleRecyclerViewAdapter;
     private Translator mTranslator = new JinshanTranslator();
     private LinearLayoutManager mLinearLayoutManager;
@@ -51,8 +54,8 @@ public class SubtitleFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View root = LayoutInflater.from(getContext()).inflate(R.layout.fragment_subtitle, container, false);
-        tv_content = root.findViewById(R.id.tv_content);
         rc_subtitle = root.findViewById(R.id.rc_subtitle);
+        ll_whole = root.findViewById(R.id.ll_whole);
 
 //        File file = new File("subtitle.ass");
 //
@@ -108,6 +111,7 @@ public class SubtitleFragment extends Fragment {
             }
         }
 
+        setUIColor();
         return root;
     }
 
@@ -129,6 +133,10 @@ public class SubtitleFragment extends Fragment {
         SharedPreferences.Editor editor = getContext().getSharedPreferences(Constants.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).edit();
         editor.putInt(Constants.SP_SUBTITLE_SCROLL_DEPTH_KEY, mLinearLayoutManager.findFirstVisibleItemPosition());
         editor.apply();
+    }
+
+    public void setUIColor(){
+        ll_whole.setBackgroundColor(DarkUtil.isDarkMode(getContext()) ? Color.parseColor("#000000") : Color.parseColor("#ffffff"));
     }
 
     public static SubtitleFragment newInstance(Bundle args) {
