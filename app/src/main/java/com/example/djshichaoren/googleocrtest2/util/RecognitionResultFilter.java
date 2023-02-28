@@ -32,6 +32,7 @@ public class RecognitionResultFilter {
             return null;
         }
         // 选出文字出现的位置最低的
+        // todo:找到离box最近的文字
         RecognitionResult candidateResult = mDefaultRecognitionResult;
         for(RecognitionResult recognitionResult : recognitionResultList){
             if(recognitionResult.getBottom()  > candidateResult.getBottom()){

@@ -44,15 +44,18 @@ public class GoogleOcrTester {
             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), bitmapKey);
 
             ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(bitmap);
-            RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
+//            RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
 
-            if(recognitionResult == null){
-                return;
+            for (RecognitionResult recognitionResult : recognitionResultsList) {
+                if(recognitionResult == null){
+                    return;
+                }
+
+                Log.d("lwd", "test recognize content: "+ recognitionResult.mContent +
+                        " top:" + recognitionResult.mTop + " left:" + recognitionResult.mLeft +
+                        " height:" + recognitionResult.mHeight + " width:" + recognitionResult.mWidth);
             }
 
-            Log.d("lwd", "test recognize content: "+ recognitionResult.mContent +
-                    " top:" + recognitionResult.mTop + " left:" + recognitionResult.mLeft +
-                    " height:" + recognitionResult.mHeight + " width:" + recognitionResult.mWidth);
         }
 
 

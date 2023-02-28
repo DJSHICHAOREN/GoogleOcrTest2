@@ -19,7 +19,7 @@
             android:id="@+id/btn_show_translation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="recognize image"/>
+            android:text="识别图片"/>
 
         <Button
             android:id="@+id/btn_show_screen_shot_button"
