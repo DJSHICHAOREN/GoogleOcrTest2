@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * 修改时间：2019/7/16 19:49
  * 修改备注：
  */
-public class GoogleOcrImpl {
+public class GoogleOcrImpl implements OcrProxy {
     Context mContext;
     TextRecognizer mTextRecognizer;
 

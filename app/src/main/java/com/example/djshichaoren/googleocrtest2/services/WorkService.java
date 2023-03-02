@@ -10,13 +10,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.example.djshichaoren.googleocrtest2.core.recogonize.OcrProxy;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.OcrProxyImpl;
 import com.example.djshichaoren.googleocrtest2.core.view.show_view.InteractionShowView;
 import com.example.djshichaoren.googleocrtest2.core.view.show_view.TranslationShowView;
 import com.example.djshichaoren.googleocrtest2.core.word.record.SentenceDecomposer;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
 import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
-import com.example.djshichaoren.googleocrtest2.models.TranslateResult;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
@@ -24,7 +25,6 @@ import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -39,7 +39,7 @@ public class WorkService extends Service {
     private WindowManager.LayoutParams mLayoutParams;
     private ShowTranslationBinder mBinder = new ShowTranslationBinder();
     private ScreenShotter mScreenShotter;
-    private GoogleOcrImpl mGoogleOcrImpl;
+    private OcrProxy mOcrProxy;
     private InteractionShowView mInteractionShowView;
     private TranslationShowView mTranslationShowView;
     private Translator mTranslator = new JinshanTranslator();
@@ -61,7 +61,7 @@ public class WorkService extends Service {
         }
 
         Log.w("lwd", "Create translation service");
-        mGoogleOcrImpl = GoogleOcrImpl.newInstance(getApplicationContext());
+        mOcrProxy = new OcrProxyImpl(getApplicationContext());
         mSentenceDecomposer = new SentenceDecomposer(getApplicationContext());
 
     }
@@ -114,7 +114,7 @@ public class WorkService extends Service {
 
                 RecognitionResult recognitionResult = null;
                 if(screenImage != null){
-                    ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(screenImage);
+                    ArrayList<RecognitionResult> recognitionResultsList = mOcrProxy.recognize(screenImage);
                     recognitionResult = RecognitionResultFilter.filter(recognitionResultsList);
 
                 }
