@@ -40,7 +40,7 @@ public class Predictor {
     protected float scoreThreshold = 0.1f;
     protected Bitmap inputImage = null;
     protected Bitmap outputImage = null;
-    protected volatile String outputResult = "";
+    protected volatile ArrayList<OcrResultModel> outputObjectListResult;
     protected float preprocessTime = 0;
     protected float postprocessTime = 0;
 
@@ -156,7 +156,7 @@ public class Predictor {
             assetsInputStream.read(lines);
             assetsInputStream.close();
             String words = new String(lines);
-            String[] contents = words.split("\n");
+            String[] contents = words.split("\r\n");
             for (String content : contents) {
                 wordLabels.add(content);
             }
@@ -240,7 +240,11 @@ public class Predictor {
         results = postprocess(results);
         Log.i(TAG, "[stat] Preprocess Time: " + preprocessTime
                 + " ; Inference Time: " + inferenceTime + " ;Box Size " + results.size());
-        drawResults(results);
+
+        outputImage = inputImage;
+        outputObjectListResult = results;
+
+//        drawResults(results);
 
         return true;
     }
@@ -278,8 +282,8 @@ public class Predictor {
         return outputImage;
     }
 
-    public String outputResult() {
-        return outputResult;
+    public ArrayList<OcrResultModel> getOutputObjectListResult() {
+        return outputObjectListResult;
     }
 
     public float preprocessTime() {
@@ -328,8 +332,6 @@ public class Predictor {
             Log.i(TAG, sb.toString()); // show LOG in Logcat panel
             outputResultSb.append(i + 1).append(": ").append(result.getLabel()).append("\n");
         }
-        outputResult = outputResultSb.toString();
-        outputImage = inputImage;
         Canvas canvas = new Canvas(outputImage);
         Paint paintFillAlpha = new Paint();
         paintFillAlpha.setStyle(Paint.Style.FILL);

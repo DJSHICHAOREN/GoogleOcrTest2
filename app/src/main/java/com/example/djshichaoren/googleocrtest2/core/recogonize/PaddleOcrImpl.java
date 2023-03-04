@@ -3,17 +3,20 @@ package com.example.djshichaoren.googleocrtest2.core.recogonize;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.StringRes;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.paddle.OcrResultModel;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.paddle.Predictor;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.paddle.Utils;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PaddleOcrImpl implements OcrProxy {
 
@@ -127,9 +130,21 @@ public class PaddleOcrImpl implements OcrProxy {
             predictor.setInputImage(image);
             if (predictor.runModel()) {
                 ArrayList<RecognitionResult> recognitionResultArrayList = new ArrayList<>();
-                RecognitionResult recognitionResult
-                        = new RecognitionResult(0, 0, 0, 0, predictor.outputResult());
-                recognitionResultArrayList.add(recognitionResult);
+
+                ArrayList<OcrResultModel> ocrResultModelArrayList = predictor.getOutputObjectListResult();
+                for (OcrResultModel ocrResultModel : ocrResultModelArrayList) {
+                    List<Point> points = ocrResultModel.getPoints();
+                    if (points != null && points.size() > 3) {
+                        RecognitionResult recognitionResult
+                                = new RecognitionResult(points.get(0).y, points.get(0).x
+                                        , points.get(2).x - points.get(2).x
+                                        , points.get(2).y - points.get(2).y
+                                        , ocrResultModel.getLabel());
+                        recognitionResultArrayList.add(recognitionResult);
+                    }
+
+                }
+
                 return recognitionResultArrayList;
             }
         }

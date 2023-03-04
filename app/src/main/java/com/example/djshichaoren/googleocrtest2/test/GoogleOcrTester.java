@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.OcrProxy;
+import com.example.djshichaoren.googleocrtest2.core.recogonize.OcrProxyImpl;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
@@ -20,12 +22,12 @@ import java.util.List;
  * 修改备注：
  */
 public class GoogleOcrTester {
-    GoogleOcrImpl mGoogleOcrImpl;
+    OcrProxy mOcrProxy;
     Context mContext;
     private RecognitionResultFilter mRecognitionResultFilter;
     List<Integer> bitmapKeyList = new ArrayList<>();
     public GoogleOcrTester(Context context){
-        mGoogleOcrImpl = GoogleOcrImpl.newInstance(context);
+        mOcrProxy = OcrProxyImpl.newInstance(context);
         mContext = context;
         mRecognitionResultFilter = new RecognitionResultFilter();
 
@@ -43,7 +45,7 @@ public class GoogleOcrTester {
         for(int bitmapKey : bitmapKeyList){
             Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), bitmapKey);
 
-            ArrayList<RecognitionResult> recognitionResultsList = mGoogleOcrImpl.recognize(bitmap);
+            ArrayList<RecognitionResult> recognitionResultsList = mOcrProxy.recognize(bitmap);
 //            RecognitionResult recognitionResult = mRecognitionResultFilter.filter(recognitionResultsList);
 
             for (RecognitionResult recognitionResult : recognitionResultsList) {

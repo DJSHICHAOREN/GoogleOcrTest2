@@ -61,7 +61,7 @@ public class WorkService extends Service {
         }
 
         Log.w("lwd", "Create translation service");
-        mOcrProxy = new OcrProxyImpl(getApplicationContext());
+        mOcrProxy = OcrProxyImpl.newInstance(getApplicationContext());
         mSentenceDecomposer = new SentenceDecomposer(getApplicationContext());
 
     }

@@ -9,15 +9,24 @@ import java.util.ArrayList;
 
 public class OcrProxyImpl implements OcrProxy {
 
-    OcrProxy ocrProxy;
+    public static OcrProxy mOcrProxy;
 
     public OcrProxyImpl(Context context) {
 //        ocrProxy = GoogleOcrImpl.newInstance(context);
-        ocrProxy = PaddleOcrImpl.newInstance(context);
+        mOcrProxy = PaddleOcrImpl.newInstance(context);
     }
 
     @Override
     public ArrayList<RecognitionResult> recognize(Bitmap image) {
-        return ocrProxy.recognize(image);
+        return mOcrProxy.recognize(image);
     }
+
+    public static OcrProxy newInstance(Context context){
+        if(mOcrProxy == null){
+            mOcrProxy = new PaddleOcrImpl(context);
+        }
+        return mOcrProxy;
+    }
+
+
 }
