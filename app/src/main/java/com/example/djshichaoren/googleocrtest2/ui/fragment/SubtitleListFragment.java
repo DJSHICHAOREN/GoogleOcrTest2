@@ -2,7 +2,6 @@ package com.example.djshichaoren.googleocrtest2.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,12 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.djshichaoren.googleocrtest2.R;
+import com.example.djshichaoren.googleocrtest2.RealMainActivity;
 import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.models.BaseEvent;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
-import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 import com.example.djshichaoren.googleocrtest2.ui.adapter.SubtitleListRecyclerViewAdapter;
 import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 
@@ -34,7 +32,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.io.InputStream;
 import java.util.List;
 
-public class SubtitleListFragment extends Fragment {
+public class SubtitleListFragment extends BaseFragment {
 
     private RecyclerView rv_subtitle_list;
     private Button btn_add_network_subtitle;
@@ -53,7 +51,18 @@ public class SubtitleListFragment extends Fragment {
         rv_subtitle_list.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         mSubtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
         if(mSubtitleEntityList != null){
-            mSubtitleListRecyclerViewAdapter = new SubtitleListRecyclerViewAdapter(mSubtitleEntityList);
+            mSubtitleListRecyclerViewAdapter = new SubtitleListRecyclerViewAdapter(mSubtitleEntityList, new SubtitleListItemClickCallback() {
+                @Override
+                public boolean run(SubtitleEntity subtitleEntity) {
+                    if (!mIsChooseAssistSubtitle || subtitleEntity == null)
+                        return false;
+
+                    RealMainActivity realMainActivity = (RealMainActivity)getActivity();
+                    realMainActivity.changeFragmentToSetAssistSubtitle(subtitleEntity);
+                    mIsChooseAssistSubtitle = false;
+                    return true;
+                }
+            });
             rv_subtitle_list.setAdapter(mSubtitleListRecyclerViewAdapter);
         }
 
@@ -106,10 +115,7 @@ public class SubtitleListFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d("lwd", "SubtitleListFragment onResume");
-
+    public void onRealResume() {
         if(getArguments() != null) {
             Bundle bundle = getArguments();
             mIsChooseAssistSubtitle = bundle.getBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, false);
@@ -118,6 +124,11 @@ public class SubtitleListFragment extends Fragment {
                 bundle.putBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, false);
             }
         }
+    }
+
+    @Override
+    public void onRealPause() {
+
     }
 
     @Override
@@ -144,6 +155,10 @@ public class SubtitleListFragment extends Fragment {
 
     public static SubtitleListFragment newInstance(){
         return new SubtitleListFragment();
+    }
+
+    public interface SubtitleListItemClickCallback {
+        public boolean run(SubtitleEntity subtitleEntity);
     }
 
 }

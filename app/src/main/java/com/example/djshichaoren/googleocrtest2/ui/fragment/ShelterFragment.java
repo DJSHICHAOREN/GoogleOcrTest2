@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,14 +21,16 @@ import androidx.fragment.app.Fragment;
 import com.example.djshichaoren.googleocrtest2.MainActivity;
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.RealMainActivity;
+import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.permission.FloatPermissionManager;
 import com.example.djshichaoren.googleocrtest2.permission.UphoneCallback;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.util.OrientationChangeListener;
 import com.example.djshichaoren.googleocrtest2.util.ScreenLocationCalculator;
 
-public class ShelterFragment extends Fragment {
+public class ShelterFragment extends BaseFragment {
 
     private MediaProjectionManager mMediaProjectionManager;
     private ScreenShotter mScreenShotter;
@@ -38,6 +41,7 @@ public class ShelterFragment extends Fragment {
     private static final int DRAW_OVERLAY_REQUEST_CODE = 1;
     private Button btn_start;
     private Button btn_choose_assist_subtitle;
+    private TextView tv_assist_subtitle;
 
     private static final String START_RECOGNIZE_BUTTON_TEXT = "开始识别";
     private static final String STOP_RECOGNIZE_BUTTON_TEXT = "结束识别";
@@ -60,6 +64,7 @@ public class ShelterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shelter, container, false);
         btn_start = view.findViewById(R.id.btn_start);
+        tv_assist_subtitle = view.findViewById(R.id.tv_assist_subtitle);
         btn_choose_assist_subtitle = view.findViewById(R.id.btn_choose_assist_subtitle);
         btn_start.setTag(0);
 
@@ -108,6 +113,25 @@ public class ShelterFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onRealResume() {
+        if(getArguments() != null) {
+            Bundle bundle = getArguments();
+            if(bundle.getBoolean(Constants.IS_SET_ASSIST_SUBTITLE_KEY, false)) {
+                SubtitleEntity subtitleEntity = (SubtitleEntity) bundle.getSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY);
+                tv_assist_subtitle.setText(subtitleEntity.getName());
+
+                bundle.putSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY, null);
+                bundle.putBoolean(Constants.IS_SET_ASSIST_SUBTITLE_KEY, false);
+            }
+        }
+    }
+
+    @Override
+    public void onRealPause() {
+
     }
 
     public void startLearnVideo(){

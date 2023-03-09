@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.djshichaoren.googleocrtest2.config.Constants;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.ShelterFragment;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleFragment;
@@ -151,8 +152,16 @@ public class RealMainActivity extends AppCompatActivity {
             bundle.putBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, true);
             mCurrentFragment.setArguments(bundle);
         }
+    }
 
-
+    public void changeFragmentToSetAssistSubtitle(SubtitleEntity subtitleEntity) {
+        changeFragment(0);
+        if(mCurrentFragment instanceof ShelterFragment) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.IS_SET_ASSIST_SUBTITLE_KEY, true);
+            bundle.putSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY, subtitleEntity);
+            mCurrentFragment.setArguments(bundle);
+        }
     }
 
     private void changeFragment(int position) {

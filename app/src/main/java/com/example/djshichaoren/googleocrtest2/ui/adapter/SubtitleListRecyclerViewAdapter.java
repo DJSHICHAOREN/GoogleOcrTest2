@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.djshichaoren.googleocrtest2.R;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
+import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleListFragment;
 import com.example.djshichaoren.googleocrtest2.ui.viewholder.SubtitleListItemVH;
 
 import java.util.List;
@@ -15,16 +16,19 @@ import java.util.List;
 public class SubtitleListRecyclerViewAdapter extends RecyclerView.Adapter<SubtitleListItemVH> {
 
     private List<SubtitleEntity> mSubtitleEntityList;
+    private SubtitleListFragment.SubtitleListItemClickCallback mSubtitleListItemClickCallback;
 
-    public SubtitleListRecyclerViewAdapter(List<SubtitleEntity> subtitleEntityList){
+    public SubtitleListRecyclerViewAdapter(List<SubtitleEntity> subtitleEntityList
+            , SubtitleListFragment.SubtitleListItemClickCallback subtitleListItemClickCallback){
         mSubtitleEntityList = subtitleEntityList;
+        mSubtitleListItemClickCallback = subtitleListItemClickCallback;
     }
 
     @NonNull
     @Override
     public SubtitleListItemVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new SubtitleListItemVH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_subtitle_list_item_vh, parent, false));
+                .inflate(R.layout.layout_subtitle_list_item_vh, parent, false), mSubtitleListItemClickCallback);
     }
 
     @Override
