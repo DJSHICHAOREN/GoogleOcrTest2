@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.djshichaoren.googleocrtest2.config.Constants;
 import com.example.djshichaoren.googleocrtest2.services.WorkService;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.ShelterFragment;
 import com.example.djshichaoren.googleocrtest2.ui.fragment.SubtitleFragment;
@@ -145,18 +146,12 @@ public class RealMainActivity extends AppCompatActivity {
 
     public void changeFragmentToChooseAssistSubtitle() {
         changeFragment(1);
+        if(mCurrentFragment instanceof SubtitleListFragment) {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, true);
+            mCurrentFragment.setArguments(bundle);
+        }
 
-        // 如果不包一层handler，里面的rv_subtitle_list.getChildCount()的值为0
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCurrentFragment instanceof SubtitleListFragment) {
-                    Log.d("lwd", "changeFragmentToChooseAssistSubtitle");
-                    SubtitleListFragment subtitleListFragment = (SubtitleListFragment)mCurrentFragment;
-                    subtitleListFragment.beginAnimationToChooseItem();
-                }
-            }
-        });
 
     }
 

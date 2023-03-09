@@ -41,6 +41,7 @@ public class SubtitleListFragment extends Fragment {
     SubtitleListRecyclerViewAdapter mSubtitleListRecyclerViewAdapter;
     private static final String DEFAULT_SUBTITLE_NAME  = "星际穿越.srt";
     private List<SubtitleEntity> mSubtitleEntityList;
+    private boolean mIsChooseAssistSubtitle;
 
     @Nullable
     @Override
@@ -101,6 +102,21 @@ public class SubtitleListFragment extends Fragment {
             mSubtitleEntityList = SubtitleDatabaseUtil.getAllSubtitle(getContext());
             mSubtitleListRecyclerViewAdapter.setSubtitleEntityList(mSubtitleEntityList);
             mSubtitleListRecyclerViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("lwd", "SubtitleListFragment onResume");
+
+        if(getArguments() != null) {
+            Bundle bundle = getArguments();
+            mIsChooseAssistSubtitle = bundle.getBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, false);
+            if (mIsChooseAssistSubtitle) {
+                beginAnimationToChooseItem();
+                bundle.putBoolean(Constants.IS_CHOOSE_ASSIST_SUBTITLE_KEY, false);
+            }
         }
     }
 
