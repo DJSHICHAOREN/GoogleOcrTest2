@@ -14,8 +14,10 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -139,6 +141,23 @@ public class RealMainActivity extends AppCompatActivity {
 
 //        SubtitleFragment subtitleFragment = SubtitleFragment.newInstance();
 //        mFragmentList.add(subtitleFragment);
+    }
+
+    public void changeFragmentToChooseAssistSubtitle() {
+        changeFragment(1);
+
+        // 如果不包一层handler，里面的rv_subtitle_list.getChildCount()的值为0
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCurrentFragment instanceof SubtitleListFragment) {
+                    Log.d("lwd", "changeFragmentToChooseAssistSubtitle");
+                    SubtitleListFragment subtitleListFragment = (SubtitleListFragment)mCurrentFragment;
+                    subtitleListFragment.beginAnimationToChooseItem();
+                }
+            }
+        });
+
     }
 
     private void changeFragment(int position) {

@@ -1,6 +1,12 @@
 package com.example.djshichaoren.googleocrtest2.ui.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +79,17 @@ public class SubtitleListFragment extends Fragment {
             EventBus.getDefault().register(this);
         }
 
+        Log.d("lwd", "SubtitleListFragment onCreateView");
+
+        rv_subtitle_list.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.top = 10;
+            }
+        });
+
+
         return view;
     }
 
@@ -93,7 +110,24 @@ public class SubtitleListFragment extends Fragment {
         EventBus.getDefault().unregister(this);
     }
 
+    public void beginAnimationToChooseItem() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0; i < rv_subtitle_list.getChildCount(); i++) {
+                    View view = rv_subtitle_list.getChildAt(i);
+
+                    Animator animator = AnimatorInflater.loadAnimator(getContext(), R.animator.choose_subtitle_animation);
+                    animator.setTarget(view);
+                    animator.start();
+                }
+            }
+        });
+
+    }
+
     public static SubtitleListFragment newInstance(){
         return new SubtitleListFragment();
     }
+
 }

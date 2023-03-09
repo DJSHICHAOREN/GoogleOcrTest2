@@ -1,5 +1,6 @@
 package com.example.djshichaoren.googleocrtest2.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjectionManager;
@@ -36,6 +37,7 @@ public class ShelterFragment extends Fragment {
     private static final int GET_SCREENSHOT_REQUEST_CODE = 0;
     private static final int DRAW_OVERLAY_REQUEST_CODE = 1;
     private Button btn_start;
+    private Button btn_choose_assist_subtitle;
 
     private static final String START_RECOGNIZE_BUTTON_TEXT = "开始识别";
     private static final String STOP_RECOGNIZE_BUTTON_TEXT = "结束识别";
@@ -58,6 +60,7 @@ public class ShelterFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shelter, container, false);
         btn_start = view.findViewById(R.id.btn_start);
+        btn_choose_assist_subtitle = view.findViewById(R.id.btn_choose_assist_subtitle);
         btn_start.setTag(0);
 
         btn_start.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +94,16 @@ public class ShelterFragment extends Fragment {
 //                    startLearnVideo();
 //                }
 
+            }
+        });
+
+        btn_choose_assist_subtitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() instanceof RealMainActivity) {
+                    RealMainActivity realMainActivity = (RealMainActivity)getActivity();
+                    realMainActivity.changeFragmentToChooseAssistSubtitle();
+                }
             }
         });
 
