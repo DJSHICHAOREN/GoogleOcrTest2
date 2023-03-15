@@ -162,6 +162,8 @@ public class RealMainActivity extends AppCompatActivity {
             bundle.putSerializable(Constants.SUBTITLE_LIST_ITEM_VH_SUBTITLE_KEY, subtitleEntity);
             mCurrentFragment.setArguments(bundle);
         }
+
+        mWorkService.setAssistSubtitle(subtitleEntity);
     }
 
     private void changeFragment(int position) {

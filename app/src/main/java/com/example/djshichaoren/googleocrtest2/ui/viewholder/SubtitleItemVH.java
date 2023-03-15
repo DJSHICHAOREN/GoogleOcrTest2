@@ -110,9 +110,9 @@ public class SubtitleItemVH extends BaseVH {
                 int freeWidth = 0;
                 LinearLayout wordLinearLayout = null;
                 ll_word_line.removeAllViews();
-                if(srtLine.getEnglishString() != null){
+                if(srtLine.getEnglishWordList() != null){
 
-                    String[] wordsArray = srtLine.getEnglishString().split("\\s+");
+                    List<String> wordsArray = srtLine.getEnglishWordList();
                     for(String word : wordsArray){
                         // 创建单词控件
                         TextView wordView = new TextView(SubtitleItemVH.this.itemView.getContext());

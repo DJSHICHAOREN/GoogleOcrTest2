@@ -4,6 +4,7 @@ import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.common.SubtitleLine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,6 +60,13 @@ public class SRTLine extends SubtitleLine<SRTTime> {
     public String getEnglishString(){
         if(textLines != null && textLines.size() > 1){
             return textLines.get(1);
+        }
+        return null;
+    }
+
+    public List<String> getEnglishWordList() {
+        if (getEnglishString() != null) {
+            return Arrays.asList(getEnglishString().split("\\s+"));
         }
         return null;
     }

@@ -45,6 +45,7 @@ public class InteractionShowView extends FloatContainer{
 
     public void updateSentence(String sentence){
         mWordLinearLayout.removeAllViews();
+        if (sentence == null) return;
 
         String[] wordsArray = sentence.split("\\s+");
         for(String word : wordsArray){

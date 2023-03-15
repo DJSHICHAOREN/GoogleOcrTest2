@@ -29,4 +29,9 @@ public class StringCleaner {
         sentence = sentence.toLowerCase();
         return sentence;
     }
+
+    public static String removeStringBlank(String content) {
+        content = content.replaceAll("\\s+", "");
+        return content;
+    }
 }

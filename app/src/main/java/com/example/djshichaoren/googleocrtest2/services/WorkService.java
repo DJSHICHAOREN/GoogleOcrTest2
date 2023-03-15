@@ -16,15 +16,25 @@ import com.example.djshichaoren.googleocrtest2.core.view.show_view.InteractionSh
 import com.example.djshichaoren.googleocrtest2.core.view.show_view.TranslationShowView;
 import com.example.djshichaoren.googleocrtest2.core.word.record.SentenceDecomposer;
 import com.example.djshichaoren.googleocrtest2.core.word.translate.Translator;
+import com.example.djshichaoren.googleocrtest2.database.SubtitleDatabaseUtil;
+import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
+import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 import com.example.djshichaoren.googleocrtest2.models.BoundingBox;
 import com.example.djshichaoren.googleocrtest2.models.RecognitionResult;
 import com.example.djshichaoren.googleocrtest2.core.recogonize.GoogleOcrImpl;
+import com.example.djshichaoren.googleocrtest2.subtitle_api.parser.SRTParser;
+import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTLine;
+import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
+import com.example.djshichaoren.googleocrtest2.util.EnhanceSubtitleUtil;
+import com.example.djshichaoren.googleocrtest2.util.FileUtil;
 import com.example.djshichaoren.googleocrtest2.util.ImageCuttingUtil;
 import com.example.djshichaoren.googleocrtest2.util.JinshanTranslator;
 import com.example.djshichaoren.googleocrtest2.util.RecognitionResultFilter;
 import com.example.djshichaoren.googleocrtest2.core.screenshot.ScreenShotter;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -46,6 +56,7 @@ public class WorkService extends Service {
     private SentenceDecomposer mSentenceDecomposer;
     private Handler mRecognizeHandler = new Handler();
     private boolean isStartRecognize;
+    private EnhanceSubtitleUtil mEnhanceSubtitleUtil = new EnhanceSubtitleUtil();
     @Override
     public void onCreate() {
         super.onCreate();
@@ -84,6 +95,31 @@ public class WorkService extends Service {
 
     }
 
+    public void setAssistSubtitle(SubtitleEntity subtitleEntity) {
+        if (subtitleEntity != null) {
+            File subtitleFile = FileUtil.getSubtitleFile(getApplicationContext(), subtitleEntity.name);
+            if (subtitleFile != null) {
+                SRTParser parser = new SRTParser();
+                SRTSub subtitle = parser.parse(subtitleFile, null);
+
+                // 获取生词场景
+                List<WordSceneEntity> wordSceneEntityList = SubtitleDatabaseUtil.getAllWordSceneEntityWithSubtitleId(getApplicationContext(), subtitleEntity.id);
+//                Collections.sort(wordSceneEntityList);
+//                for (WordSceneEntity wordSceneEntity : wordSceneEntityList) {
+//                    Log.d("lwd", wordSceneEntity.subtitleSentencePosition + " " + wordSceneEntity.word);
+//                }
+
+                // 将生词场景加入字幕数据中
+                for (WordSceneEntity wordSceneEntity : wordSceneEntityList) {
+                    SRTLine srtLine = subtitle.getSrtLine(wordSceneEntity.subtitleSentencePosition);
+                    srtLine.addWordSceneEntity(wordSceneEntity);
+                }
+
+                mEnhanceSubtitleUtil.setAssistSubtitle(subtitle);
+            }
+        }
+    }
+
     /**
      * 开始进行识别，显示Service
      */
@@ -120,7 +156,9 @@ public class WorkService extends Service {
                 }
 
                 if(recognitionResult != null){
-                    mInteractionShowView.updateSentence(recognitionResult.mContent);
+                    Log.d("lwd", "recognitionResult:" + recognitionResult.mContent);
+                    String content = mEnhanceSubtitleUtil.enhance(recognitionResult.mContent);
+                    mInteractionShowView.updateSentence(content);
 
 //                    List<String> wordList = mSentenceDecomposer.filter(recognitionResult.mContent);
 //
