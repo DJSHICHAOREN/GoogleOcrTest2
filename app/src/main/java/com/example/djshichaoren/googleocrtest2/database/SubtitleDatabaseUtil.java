@@ -11,6 +11,7 @@ import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.SubtitleSentenceEntity;
 import com.example.djshichaoren.googleocrtest2.database.entity.WordSceneEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SubtitleDatabaseUtil {
@@ -132,7 +133,7 @@ public class SubtitleDatabaseUtil {
         SubtitleDatabase subtitleDatabase = SubtitleDatabase.getInstance(context);
         WordSceneDao wordSceneDao = subtitleDatabase.getWordSceneDao();
 
-        List<WordSceneEntity> wordSceneEntityList = wordSceneDao.queryWordSceneWithSubtitleId(subtitleId);
+        List<WordSceneEntity> wordSceneEntityList = wordSceneDao.queryWordSceneWithSubtitleId(subtitleId, true);
         return wordSceneEntityList;
     }
 
