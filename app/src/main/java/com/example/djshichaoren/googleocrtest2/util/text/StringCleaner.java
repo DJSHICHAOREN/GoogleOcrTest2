@@ -19,19 +19,24 @@ public class StringCleaner {
     }
 
     public static String cleanWordString(String word){
-        word = word.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|||\\]", "");
+        word = word.replaceAll("'|\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|||\\]", "");
         word = word.toLowerCase();
         return word;
     }
 
     public static String cleanSentenceString(String sentence){
-        sentence = sentence.replaceAll("\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|\\]", " ");
+        sentence = sentence.replaceAll("'|\\.|,|'s|!|\\?|@|#|$|%|&|\\*|/|;|-|\\+|=|\\[|\\]", " ");
         sentence = sentence.toLowerCase();
         return sentence;
     }
 
     public static String removeStringBlank(String content) {
         content = content.replaceAll("\\s+", "");
+        return content;
+    }
+
+    public static String replace_l_to_i(String content) {
+        content = content.replaceAll("l", "i");
         return content;
     }
 }

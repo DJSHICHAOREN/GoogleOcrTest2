@@ -7,7 +7,6 @@ import com.example.djshichaoren.googleocrtest2.subtitle_api.subtitle.srt.SRTSub;
 import com.example.djshichaoren.googleocrtest2.util.text.StringCleaner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EnhanceSubtitleUtil {
@@ -27,26 +26,10 @@ public class EnhanceSubtitleUtil {
     public String enhance(String content) {
         if (mAssistSubtitle == null) return content;
 
-        if (mCurrentMatchedIndex != -1) {
-            mCurrentMatchedIndex++;
-            if (mCurrentMatchedIndex >= mAssistSubtitle.getLength()) return content;
-            SRTLine srtLine = mAssistSubtitle.getSrtLine(mCurrentMatchedIndex);
-            if (isContentSimilarToSubtitle(content, srtLine.getEnglishWordList())) {
-                return srtLine.getEnglishString();
-            }
-            else {
-                mCurrentMatchedIndex = -1;
-                return content;
-            }
-        }
-        else {
-            int result = tryToMatchContent(content);
-            if (result != -1) {
-                SRTLine srtLine = mAssistSubtitle.getSrtLine(result);
-//                mCurrentMatchedIndex = result;
-                return srtLine.getEnglishString();
-            }
-
+        int result = tryToMatchContent(content);
+        if (result != -1) {
+            SRTLine srtLine = mAssistSubtitle.getSrtLine(result);
+            return srtLine.getEnglishString();
         }
 
         return content;
@@ -57,26 +40,42 @@ public class EnhanceSubtitleUtil {
         List<Integer> candidateList = mCandidateListList.get(mNowCurrentListIndicator);
 
         if (mLastMatchedSubtitleIndex != -1) {
-            for (int i=mLastMatchedSubtitleIndex; i < mAssistSubtitle.getLength(); i++) {
+            // 先从最近找到的开始查询
+            for (int i=mLastMatchedSubtitleIndex; i < mLastMatchedSubtitleIndex + 3; i++) {
+                if (i > mAssistSubtitle.getLength()){
+                    break;
+                }
                 SRTLine srtLine = mAssistSubtitle.getSrtLine(i);
-                if (isContentSimilarToSubtitle2(content, srtLine.getEnglishWordList())) {
+                if (isContentSimilarToSubtitleSimplified(content, srtLine.getEnglishWordList())) {
                     mLastMatchedSubtitleIndex = i;
                     return i;
                 }
             }
+            mLastMatchedSubtitleIndex = -1;
 
-            for (int i = mLastMatchedSubtitleIndex; i > 0 ; i--) {
-                SRTLine srtLine = mAssistSubtitle.getSrtLine(i);
-                if (isContentSimilarToSubtitle2(content, srtLine.getEnglishWordList())) {
-                    mLastMatchedSubtitleIndex = i;
-                    return i;
-                }
-            }
+//            for (int i=mLastMatchedSubtitleIndex; i < mLastMatchedSubtitleIndex + 3; i++) {
+//                if (i > mAssistSubtitle.getLength()){
+//                    break;
+//                }
+//                SRTLine srtLine = mAssistSubtitle.getSrtLine(i);
+//                if (isContentSimilarToSubtitleSimplified(content, srtLine.getEnglishWordList())) {
+//                    mLastMatchedSubtitleIndex = i;
+//                    return i;
+//                }
+//            }
+//
+//            for (int i = mLastMatchedSubtitleIndex; i > 0 ; i--) {
+//                SRTLine srtLine = mAssistSubtitle.getSrtLine(i);
+//                if (isContentSimilarToSubtitle(content, srtLine.getEnglishWordList())) {
+//                    mLastMatchedSubtitleIndex = i;
+//                    return i;
+//                }
+//            }
         }
         else {
             for (int i=0; i < mAssistSubtitle.getLength(); i++) {
                 SRTLine srtLine = mAssistSubtitle.getSrtLine(i);
-                if (isContentSimilarToSubtitle2(content, srtLine.getEnglishWordList())) {
+                if (isContentSimilarToSubtitle(content, srtLine.getEnglishWordList())) {
                     candidateList.add(i);
                     mLastMatchedSubtitleIndex = i;
                     return i;
@@ -84,28 +83,8 @@ public class EnhanceSubtitleUtil {
             }
         }
 
-        mLastMatchedSubtitleIndex = -1;
 
 
-        // 倒着查询，看是否有连着三个都匹配上
-//        boolean matched = false;
-//        int matchedValue = -1;
-//        for (int i=0; i < candidateList.size(); i++) {
-//            int value = c bandidateList.get(i);
-//
-//            for (int j=1; j < mCandidateListList.size(); j++) {
-//                if (mCandidateListList.get((i - j + mCandidateListListCount)%mCandidateListListCount).contains(value - j)){
-//                    matched = true;
-//                    matchedValue = value;
-//                }
-//            }
-//        }
-//
-//        if (matched) {
-//            return mNowCurrentListIndicator;
-//        }
-
-//        return matchedValue;
         return -1;
     }
 
@@ -116,35 +95,9 @@ public class EnhanceSubtitleUtil {
     private boolean isContentSimilarToSubtitle(String content, List<String> subtitleTextList) {
         if (content == null || subtitleTextList == null) return false;
 
-        String newContent = content.toLowerCase();
-        int containWordCount = 0;
-        for (int i=0; i < subtitleTextList.size(); i++) {
-            String word = subtitleTextList.get(i);
-            if (newContent.contains(word.toLowerCase())) {
-                containWordCount++;
-            }
-        }
-
-        if (containWordCount > 5) {
-            Log.d("lwd", "bigger than 5");
-        }
-        if ( (subtitleTextList.size() <=3 &&  subtitleTextList.size() == containWordCount)
-                || (subtitleTextList.size() > 3 && subtitleTextList.size() - containWordCount < 2) ) {
-
-            Log.d("lwd", "isContentSimilarToSubtitle one similar content：" + newContent);
-            return true;
-        }
-        else {
-            Log.d("lwd", "failed");
-        }
-        return false;
-    }
-
-    private boolean isContentSimilarToSubtitle2(String content, List<String> subtitleTextList) {
-        if (content == null || subtitleTextList == null) return false;
-
         content = StringCleaner.cleanSentenceString(content);
         content = StringCleaner.removeStringBlank(content);
+        content = StringCleaner.replace_l_to_i(content);
 
         StringBuilder subtitleStringBuilder = new StringBuilder();
         for (int i=0; i < subtitleTextList.size(); i++) {
@@ -152,17 +105,18 @@ public class EnhanceSubtitleUtil {
         }
         String subtitleString = StringCleaner.cleanSentenceString(subtitleStringBuilder.toString());
         subtitleString = StringCleaner.removeStringBlank(subtitleString);
-        boolean isTheAnimSentence = false;
-        if (subtitleString.indexOf("ifthebibletellsyou") != -1) {
-            Log.d("lwd", "hello");
-            isTheAnimSentence = true;
-        }
+//        boolean isTheAnimSentence = false;
+//        if (subtitleString.indexOf("thisuvsuit") != -1) {
+//            Log.d("lwd", "hello");
+//            isTheAnimSentence = true;
+//        }
 
         int notFoundWord = 0;
         int contentRedundant = 0;
         for (int i=0; i < subtitleTextList.size(); i++) {
             String subtitleWord = StringCleaner.cleanSentenceString(subtitleTextList.get(i));
             subtitleWord = StringCleaner.removeStringBlank(subtitleWord);
+            subtitleWord = StringCleaner.replace_l_to_i(subtitleWord);
 
             int wordIndex = content.indexOf(subtitleWord);
             if (wordIndex != -1) {
@@ -171,6 +125,7 @@ public class EnhanceSubtitleUtil {
                     contentRedundant += wordIndex;
                 }
 
+                // 去除已经匹配到的单词及其前面全部的字符
                 if (wordIndex + subtitleWord.length() < content.length()) {
                     content = content.substring(wordIndex + subtitleWord.length());
                 }
@@ -181,14 +136,78 @@ public class EnhanceSubtitleUtil {
         }
         contentRedundant += content.length();
 
-        if (isTheAnimSentence) {
-            Log.d("lwd", "notFoundWord:" + notFoundWord + " contentRedundant:" + contentRedundant);
-        }
+//        if (isTheAnimSentence) {
+//            Log.d("lwd", "notFoundWord:" + notFoundWord + " contentRedundant:" + contentRedundant);
+//        }
 
+        String msg = "content:" + content + " subtitleString:" + subtitleString
+                + " notFoundWord:" + notFoundWord + " contentRedundant:" + contentRedundant;
         if (((subtitleTextList.size() <= 3 && notFoundWord == 0)
                 || (3 < subtitleTextList.size() && subtitleTextList.size() <= 5 && notFoundWord < 2)
                 || (subtitleTextList.size() > 5 && notFoundWord < 3)) && contentRedundant < 12 ) {
+            Log.d("lwd", "success:" + msg);
+
             return true;
+        }
+        else {
+            Log.d("lwd", "failed:" + msg);
+        }
+
+        return false;
+
+    }
+
+    private boolean isContentSimilarToSubtitleSimplified(String content, List<String> subtitleTextList) {
+        if (content == null || subtitleTextList == null) return false;
+
+        content = StringCleaner.cleanSentenceString(content);
+        content = StringCleaner.removeStringBlank(content);
+        content = StringCleaner.replace_l_to_i(content);
+
+        StringBuilder subtitleStringBuilder = new StringBuilder();
+        for (int i=0; i < subtitleTextList.size(); i++) {
+            subtitleStringBuilder.append(subtitleTextList.get(i));
+        }
+        String subtitleString = StringCleaner.cleanSentenceString(subtitleStringBuilder.toString());
+        subtitleString = StringCleaner.removeStringBlank(subtitleString);
+
+        boolean isTheAnimSentence = false;
+        if (subtitleString.indexOf("backwheniwas") != -1) {
+            Log.d("lwd", "hello");
+            isTheAnimSentence = true;
+        }
+
+        int foundWord = 0;
+        for (int i=0; i < subtitleTextList.size(); i++) {
+            String subtitleWord = StringCleaner.cleanSentenceString(subtitleTextList.get(i));
+            subtitleWord = StringCleaner.removeStringBlank(subtitleWord);
+            subtitleWord = StringCleaner.replace_l_to_i(subtitleWord);
+
+
+            int wordIndex = content.indexOf(subtitleWord);
+            if (wordIndex != -1) {
+                foundWord++;
+
+            } else {
+            }
+        }
+
+//        if (isTheAnimSentence) {
+//            Log.d("lwd", "foundWord:" + foundWord);
+//        }
+
+        String msg = "content:" + content + " subtitleString:" + subtitleString
+                + " foundWord:" + foundWord + " subtitleTextList.size():" + subtitleTextList.size()
+                + " 1:" + (foundWord > 0) + " 2:" + (subtitleTextList.size() < 5 && foundWord > 1)
+                + " 3:" + (foundWord / subtitleTextList.size() >= 0.5);
+        if (foundWord > 0
+                &&
+                ( (subtitleTextList.size() < 5 && foundWord > 1) ||(foundWord / subtitleTextList.size() >= 0.5))  ) {
+            Log.d("lwd", "Simplified success :" + msg + " ");
+            return true;
+        }
+        else {
+            Log.d("lwd", "Simplified failed :" + msg);
         }
 
         return false;
