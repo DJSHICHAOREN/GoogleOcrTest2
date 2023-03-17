@@ -194,12 +194,12 @@ public class EnhanceSubtitleUtil {
 
 //        if (isTheAnimSentence) {
 //            Log.d("lwd", "foundWord:" + foundWord);
-//        }
+//        }:
 
         String msg = "content:" + content + " subtitleString:" + subtitleString
                 + " foundWord:" + foundWord + " subtitleTextList.size():" + subtitleTextList.size()
                 + " 1:" + (foundWord > 0) + " 2:" + (subtitleTextList.size() < 5 && foundWord > 1)
-                + " 3:" + (foundWord / subtitleTextList.size() >= 0.5);
+                + " 3:" + ((float)foundWord / subtitleTextList.size() >= 0.5);
         if (foundWord > 0
                 &&
                 ( (subtitleTextList.size() < 5 && foundWord > 1) ||(foundWord / subtitleTextList.size() >= 0.5))  ) {
